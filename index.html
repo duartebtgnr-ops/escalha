@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escala Operadores de Trânsito 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;700&display=swap');
+
+  :root {
+    --navy:   #1E2D45;
+    --navy2:  #2A3F5F;
+    --accent: #3D82C4;
+    --green:  #4CAF6F;
+    --purple: #8B5CA5;
+    --blue:   #4A8EC2;
+    --gold:   #E6A817;
+    --red:    #D94040;
+    --gray:   #A0A8B4;
+    --light:  #F0F4F9;
+    --white:  #FFFFFF;
+    --border: #D1DBE8;
+    --text:   #1A2233;
+    --muted:  #6B7A94;
+  }
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',sans-serif; background:var(--light); color:var(--text); min-height:100vh; }
+
+  /* HEADER */
+  header {
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+    color:#fff; padding:18px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 2px 12px rgba(0,0,0,.25);
+  }
+  header h1 { font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:.04em; }
+  header p  { font-size:.75rem; opacity:.7; margin-top:2px; }
+  .badge { background:var(--accent); color:#fff; font-size:.7rem; font-weight:600; padding:3px 10px; border-radius:20px; }
+
+  /* TABS */
+  .tabs { display:flex; background:var(--navy); padding:0 32px; gap:2px; }
+  .tab { padding:10px 20px; font-size:.82rem; font-weight:500; color:rgba(255,255,255,.6);
+         cursor:pointer; border-bottom:3px solid transparent; transition:all .2s; white-space:nowrap; }
+  .tab:hover { color:#fff; }
+  .tab.active { color:#fff; border-bottom-color:var(--accent); }
+
+  /* PANELS */
+  .panel { display:none; padding:24px 32px; }
+  .panel.active { display:block; }
+
+  /* CARDS */
+  .card { background:#fff; border-radius:12px; padding:20px 24px; box-shadow:0 1px 6px rgba(0,0,0,.07); margin-bottom:18px; }
+  .card h2 { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:700; color:var(--navy); margin-bottom:14px; letter-spacing:.03em; text-transform:uppercase; }
+
+  /* FORM CONTROLS */
+  .row { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; }
+  label { font-size:.78rem; font-weight:600; color:var(--navy); display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+  input[type=date], select { border:1.5px solid var(--border); border-radius:7px; padding:7px 11px; font-size:.85rem;
+    font-family:'Inter',sans-serif; color:var(--text); background:#fff; outline:none; }
+  input[type=date]:focus, select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(61,130,196,.15); }
+
+  .checkboxes { display:flex; flex-wrap:wrap; gap:8px; }
+  .cb-label { display:flex; align-items:center; gap:6px; font-size:.82rem; font-weight:500;
+    background:#fff; border:1.5px solid var(--border); border-radius:20px; padding:5px 13px; cursor:pointer; transition:all .2s; }
+  .cb-label:hover { border-color:var(--accent); }
+  .cb-label input { display:none; }
+  .cb-label.checked { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+
+  /* BUTTONS */
+  .btn { padding:8px 20px; border:none; border-radius:7px; font-size:.82rem; font-weight:600;
+    cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:#2f6fa8; }
+  .btn-success { background:var(--green); color:#fff; }
+  .btn-success:hover { background:#3a9058; }
+  .btn-outline { background:#fff; color:var(--navy); border:1.5px solid var(--border); }
+  .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* CALENDAR GRID */
+  .cal-wrap { overflow-x:auto; }
+  .cal-month { margin-bottom:24px; }
+  .cal-month-title { font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:700;
+    color:var(--navy); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; padding-left:2px; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; min-width:560px; }
+  .cal-hdr { text-align:center; font-size:.68rem; font-weight:700; color:var(--muted);
+    text-transform:uppercase; padding:4px 0; letter-spacing:.05em; }
+  .cal-cell { border-radius:7px; padding:7px 6px; min-height:52px; font-size:.72rem; position:relative; background:#f7f9fc; }
+  .cal-cell.weekend { background:#EDEFF3; }
+  .cal-cell.other-month { opacity:.28; }
+  .cal-cell .day-num { font-weight:700; font-size:.78rem; color:var(--muted); margin-bottom:3px; }
+  .cal-cell .entries { display:flex; flex-direction:column; gap:2px; }
+  .entry { border-radius:4px; padding:2px 5px; font-size:.67rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .entry.sv  { background:rgba(76,175,111,.2); color:#2d7a4e; border-left:3px solid var(--green); }
+  .entry.f   { background:rgba(139,92,165,.18); color:#6b3a8a; border-left:3px solid var(--purple); }
+  .entry.lp  { background:rgba(74,142,194,.2); color:#2c5f82; border-left:3px solid var(--blue); }
+  .entry.other{ background:rgba(160,168,180,.2); color:#555; border-left:3px solid #bbb; }
+  .entry.troca{ background:rgba(230,126,34,.18); color:#7d4400; border-left:3px solid #E67E22; }
+
+  /* TABLE */
+  .tbl-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.8rem; }
+  th { background:var(--navy); color:#fff; font-weight:600; padding:9px 12px; text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  td { padding:8px 12px; border-bottom:1px solid var(--border); }
+  tr:hover td { background:#f5f8fc; }
+  .badge-sv  { background:rgba(76,175,111,.18); color:#2d7a4e; font-weight:600; padding:2px 9px; border-radius:12px; font-size:.72rem; }
+  .badge-f   { background:rgba(139,92,165,.16); color:#6b3a8a; font-weight:600; padding:2px 9px; border-radius:12px; font-size:.72rem; }
+  .badge-lp  { background:rgba(74,142,194,.18); color:#2c5f82; font-weight:600; padding:2px 9px; border-radius:12px; font-size:.72rem; }
+  .badge-ot  { background:#f0f0f0; color:#555; font-weight:600; padding:2px 9px; border-radius:12px; font-size:.72rem; }
+
+  /* LEGEND */
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+  .leg { display:flex; align-items:center; gap:5px; font-size:.75rem; color:var(--muted); }
+  .leg-dot { width:10px; height:10px; border-radius:3px; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-bottom:16px; }
+  .stat { background:#fff; border-radius:10px; padding:14px 16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .stat .num { font-family:'Barlow Condensed',sans-serif; font-size:2rem; font-weight:700; color:var(--navy); }
+  .stat .lbl { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+
+  /* TROCA FORM */
+  .troca-form .row { gap:18px; }
+  .form-group { flex:1; min-width:160px; }
+  textarea { width:100%; border:1.5px solid var(--border); border-radius:7px; padding:9px 11px;
+    font-family:'Inter',sans-serif; font-size:.84rem; resize:vertical; outline:none; }
+  textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(61,130,196,.15); }
+
+  /* PDF preview overlay */
+  #pdf-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:100;
+    align-items:center; justify-content:center; }
+  #pdf-overlay.show { display:flex; }
+  .pdf-box { background:#fff; border-radius:14px; width:min(820px,96vw); max-height:92vh;
+    overflow:auto; padding:32px 36px; position:relative; }
+  .pdf-box .close-btn { position:absolute; top:12px; right:16px; background:none; border:none;
+    font-size:1.4rem; cursor:pointer; color:var(--muted); }
+
+  /* PDF PRINT STYLES */
+  @media print {
+    body > *:not(#pdf-overlay) { display:none !important; }
+    #pdf-overlay { display:flex !important; position:static; background:none; }
+    .pdf-box { box-shadow:none; padding:0; max-height:none; }
+    .no-print { display:none !important; }
+    .close-btn { display:none !important; }
+  }
+
+  #empty-msg { text-align:center; color:var(--muted); font-size:.88rem; padding:32px 0; }
+  .divider { height:1px; background:var(--border); margin:18px 0; }
+  .section-label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:8px; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    header { padding:12px 16px; }
+    header h1 { font-size:1.1rem; }
+    .tabs { padding:0 8px; overflow-x:auto; }
+    .tab { padding:10px 12px; font-size:.76rem; }
+    .panel { padding:12px 14px; }
+    .card { padding:14px 14px; border-radius:8px; }
+    .card h2 { font-size:.95rem; }
+    .row { gap:10px; }
+    .row > div, .form-group { min-width:100%; flex:1 1 100%; }
+    input[type=date], select { width:100%; font-size:.9rem; padding:8px 10px; }
+    .btn { padding:9px 14px; font-size:.8rem; width:100%; text-align:center; }
+    .btn-outline { width:auto; }
+    .checkboxes { gap:6px; }
+    .cb-label { font-size:.8rem; padding:6px 12px; }
+    .stats-row { grid-template-columns:repeat(3,1fr); gap:8px; }
+    .stat .num { font-size:1.5rem; }
+    .stat { padding:10px 8px; }
+    #banner-servico { padding:10px 14px; gap:10px; }
+    #banner-servico > div { min-width:calc(50% - 5px); flex:1 1 calc(50% - 5px); }
+    .cal-grid { min-width:0; }
+    .cal-cell { min-height:40px; padding:4px 3px; }
+    .entry { font-size:.6rem; padding:1px 3px; }
+    .troca-form .row > div { min-width:100%; }
+    .pdf-box { padding:16px 14px; }
+    #sheet-config-bar { padding:6px 14px; }
+    .tabs { gap:0; }
+  }
+  .sit-badge { display:inline-block;padding:2px 10px;border-radius:12px;font-size:.72rem;font-weight:700; }
+  .sit-pendente { background:#FFF3CD;color:#856404; }
+  .sit-progresso { background:#CCE5FF;color:#004085; }
+  .sit-concluida { background:#D4EDDA;color:#155724; }
+  .sit-cancelada { background:#F8D7DA;color:#721c24; }
+  .sit-card { background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px;border-left:4px solid #ccc; }
+  .sit-card.urgente { border-left-color:#C00000; }
+  .sit-card.transporte { border-left-color:#E67E22; }
+  .sit-card.evento { border-left-color:#3D82C4; }
+  .sit-card.outro { border-left-color:#8B5CA5; }
+  .sit-badge { display:inline-block;padding:2px 10px;border-radius:12px;font-size:.72rem;font-weight:700; }
+  .sit-pendente { background:#FFF3CD;color:#856404; }
+  .sit-progresso { background:#CCE5FF;color:#004085; }
+  .sit-concluida { background:#D4EDDA;color:#155724; }
+  .sit-cancelada { background:#F8D7DA;color:#721c24; }
+  .sit-card { background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px;border-left:4px solid #ccc; }
+  .sit-card.urgente { border-left-color:#C00000; }
+  .sit-card.transporte { border-left-color:#E67E22; }
+  .sit-card.evento { border-left-color:#3D82C4; }
+  .sit-card.outro { border-left-color:#8B5CA5; }
+  @media (max-width: 400px) {
+  
+    .stats-row { grid-template-columns:repeat(2,1fr); }
+    #banner-servico > div { min-width:100%; }
+  }
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    body > *:not(#pdf-overlay) { display:none !important; }
+    #pdf-overlay { display:flex !important; position:static; background:none; }
+    .pdf-box { box-shadow:none; padding:0; max-height:none; width:100%; }
+    .no-print { display:none !important; }
+    .close-btn { display:none !important; }
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>⚖️ Operadores de Trânsito · Escala 2026</h1>
+    <p>Gestão de serviços, férias e licenças</p>
+  </div>
+  <span class="badge">2026</span>
+</header>
+<div id="loading-bar" style="display:none;height:3px;background:linear-gradient(90deg,#3D82C4,#92D050,#3D82C4);background-size:200%;animation:slide 1.2s linear infinite"></div>
+<style>@keyframes slide{0%{background-position:200% 0}100%{background-position:0 0}}</style>
+<div style="background:#fff;border-bottom:1px solid #D1DBE8;padding:6px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span id="api-status" style="font-size:.75rem;color:#6B7A94">⏳ A carregar escala...</span>
+  <button onclick="loadFromAPI()" style="background:#fff;color:#3D82C4;border:1.5px solid #3D82C4;border-radius:6px;padding:4px 12px;font-size:.75rem;font-weight:600;cursor:pointer">↻ Atualizar</button>
+  <span id="last-update" style="font-size:.72rem;color:#A0A8B4;margin-left:auto"></span>
+</div>
+<div id="banner-servico" style="display:none">
+  <div id="banner-servico-row" style="padding:10px 32px;gap:24px;flex-wrap:wrap;align-items:stretch;display:flex;border-bottom:1px solid #D1DBE8"></div>
+  <div id="banner-sit-row" style="display:none;padding:8px 32px;gap:16px;flex-wrap:wrap;align-items:stretch;background:#FFFBF5;border-bottom:1px solid #FFE0B2"></div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('consulta')">📅 Consultar Escala</div>
+  <div class="tab" onclick="showTab('calendario')">🗓️ Calendário</div>
+  <div class="tab" onclick="showTab('troca')">🔄 Pedido de Troca</div>
+  <div class="tab" onclick="showTab('historico')">📋 Histórico Trocas</div>
+  <div class="tab" onclick="showTab('situacoes')">⚠️ Situações</div>
+</div>
+
+<!-- ═══════════════════ CONSULTA ═══════════════════ -->
+<div class="panel active" id="tab-consulta">
+  <div class="card">
+    <h2>Filtros de Consulta</h2>
+    <div class="row">
+      <div>
+        <label>Data início</label>
+        <input type="date" id="start-date">
+      </div>
+      <div>
+        <label>Data fim</label>
+        <input type="date" id="end-date">
+      </div>
+      <div>
+        <label>Tipo de registo</label>
+        <select id="filter-type">
+          <option value="all">Todos</option>
+          <option value="SV">Serviço (SV)</option>
+          <option value="F">Férias (F)</option>
+          <option value="LP">Licença Parental (LP)</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <label>Militares</label>
+      <div class="checkboxes" id="people-checks"></div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-primary" onclick="runConsulta()">🔍 Consultar</button>
+      <button class="btn btn-outline" onclick="verResultados()">📋 Ver Resultados</button>
+      <button class="btn btn-success" onclick="exportPDF()">📄 Exportar PDF</button>
+      <button class="btn btn-outline" onclick="selectAll()">Todos</button>
+      <button class="btn btn-outline" onclick="selectNone()">Nenhum</button>
+    </div>
+  </div>
+
+  <div id="stats-container"></div>
+  <div id="result-container" style="display:none"></div>
+</div>
+
+<!-- ═══════════════════ CALENDÁRIO ═══════════════════ -->
+<div class="panel" id="tab-calendario">
+  <div class="card">
+    <h2>Filtros do Calendário</h2>
+    <div class="row">
+      <div>
+        <label>Mês inicial</label>
+        <select id="cal-month-start">
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+          <option value="3">Março</option><option value="4">Abril</option>
+          <option value="5">Maio</option><option value="6">Junho</option>
+          <option value="7">Julho</option><option value="8">Agosto</option>
+          <option value="9">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12" selected>Dezembro</option>
+        </select>
+      </div>
+      <div>
+        <label>Mês final</label>
+        <select id="cal-month-end">
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+          <option value="3">Março</option><option value="4">Abril</option>
+          <option value="5">Maio</option><option value="6">Junho</option>
+          <option value="7">Julho</option><option value="8">Agosto</option>
+          <option value="9">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12" selected>Dezembro</option>
+        </select>
+      </div>
+      <div>
+        <label>Militar</label>
+        <select id="cal-person">
+          <option value="all">Todos</option>
+          <option value="DUARTE">Duarte</option>
+          <option value="REIS">Reis</option>
+          <option value="FINO">Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="buildCalendar()">🗓️ Ver Calendário</button>
+      <button class="btn btn-success" onclick="exportCalPDF()">📄 PDF</button>
+    </div>
+  </div>
+  <div id="cal-container"></div>
+</div>
+
+<!-- ═══════════════════ SITUAÇÕES ═══════════════════ -->
+<div class="panel" id="tab-situacoes">
+  <div class="card">
+    <h2>⚠️ Situações Pendentes</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Registe transportes de órgãos, eventos especiais ou outras ocorrências.</p>
+
+    <!-- Formulário nova situação -->
+    <div id="form-situacao" style="background:#f7f9fc;border-radius:10px;padding:16px;margin-bottom:20px;display:none">
+      <div class="section-label" style="margin-bottom:12px">Nova Situação</div>
+      <div class="row" style="gap:12px">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="sit-tipo" style="width:100%">
+            <option value="Transporte de Órgãos">🚑 Transporte de Órgãos</option>
+            <option value="Evento">🎯 Evento</option>
+            <option value="Urgente">🚨 Urgente</option>
+            <option value="Outro">📌 Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Data</label>
+          <input type="date" id="sit-data" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <input type="time" id="sit-hora" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>Militar</label>
+          <select id="sit-militar" style="width:100%">
+            <option value="">— todos —</option>
+            <option value="DUARTE">Flávio Duarte</option>
+            <option value="REIS">Elder Reis</option>
+            <option value="FINO">Rui Fino</option>
+            <option value="MORGADO">António Morgado</option>
+            <option value="NUNES">Carlos Nunes</option>
+            <option value="AFONSO">Miguel Afonso</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="gap:12px;margin-top:10px">
+        <div class="form-group" style="flex:2">
+          <label>Descrição</label>
+          <input type="text" id="sit-descricao" placeholder="Descreva a situação..." style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 11px;font-size:.85rem">
+        </div>
+        <div class="form-group" style="flex:2">
+          <label>Notas adicionais</label>
+          <input type="text" id="sit-notas" placeholder="Notas..." style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 11px;font-size:.85rem">
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px;gap:8px">
+        <input id="sit-pwd" type="password" placeholder="Palavra-passe situações" style="border:1.5px solid var(--border);border-radius:7px;padding:7px 11px;font-size:.82rem;width:190px">
+        <button class="btn btn-primary" onclick="submitSituacao()">✓ Registar</button>
+        <button class="btn btn-outline" onclick="document.getElementById('form-situacao').style.display='none'">Cancelar</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="document.getElementById('form-situacao').style.display='block'">+ Nova Situação</button>
+      <button class="btn btn-outline" onclick="loadSituacoes()">↻ Atualizar</button>
+      <div style="display:flex;gap:6px;margin-left:auto;flex-wrap:wrap" id="sit-filtros">
+        <button class="btn btn-outline" onclick="filtrarSit('todas')" id="sf-todas" style="background:var(--navy);color:#fff">Todas</button>
+        <button class="btn btn-outline" onclick="filtrarSit('Pendente')" id="sf-pendente">Pendentes</button>
+        <button class="btn btn-outline" onclick="filtrarSit('Em Progresso')" id="sf-progresso">Em Progresso</button>
+        <button class="btn btn-outline" onclick="filtrarSit('Concluída')" id="sf-concluida">Concluídas</button>
+      </div>
+    </div>
+
+    <div id="sit-lista"><p style="color:var(--muted);text-align:center;padding:24px">A carregar...</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ HISTÓRICO TROCAS ═══════════════════ -->
+<div class="panel" id="tab-historico">
+  <div class="card">
+    <h2>Histórico de Trocas Confirmadas</h2>
+    <div id="historico-list" style="margin-top:12px">
+      <p style="color:var(--muted);font-size:.85rem">A carregar...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PEDIDO DE TROCA ═══════════════════ -->
+<div class="panel" id="tab-troca">
+  <div class="card troca-form">
+    <h2>Pedido de Troca de Serviço</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:18px">
+      Preencha os dados abaixo para gerar o documento de pedido de troca. O PDF gerado deverá ser assinado pelas partes e submetido ao superior hierárquico.
+    </p>
+    <!-- Militar de serviço por escala (a ceder) -->
+    <div class="section-label">Militar de Serviço por Escala (quem cede)</div>
+    <div class="row">
+      <div class="form-group">
+        <label>Nome</label>
+        <select id="tr-req" onchange="fillMilitar('tr-req','tr-req-posto','tr-req-nim');lookupSv('tr-date1','tr-req','tr-sv1-info')">
+          <option value="">— selecionar —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Posto</label>
+        <input type="text" id="tr-req-posto" readonly style="width:100%;background:#f5f5f5;cursor:default">
+      </div>
+      <div class="form-group">
+        <label>NIM</label>
+        <input type="text" id="tr-req-nim" readonly style="width:100%;background:#f5f5f5;cursor:default">
+      </div>
+      <div class="form-group">
+        <label>Data do serviço (a ceder)</label>
+        <input type="date" id="tr-date1" oninput="lookupSv('tr-date1','tr-req','tr-sv1-info')">
+      </div>
+    </div>
+    <div id="tr-sv1-info" style="font-size:.78rem;color:var(--muted);margin:-8px 0 10px 0;min-height:18px"></div>
+
+    <!-- Militar que vai efetuar o serviço (substituto) -->
+    <div class="section-label" style="margin-top:6px">Militar que vai Efetuar o Serviço (substituto)</div>
+    <div class="row">
+      <div class="form-group">
+        <label>Nome</label>
+        <select id="tr-sub" onchange="fillMilitar('tr-sub','tr-sub-posto','tr-sub-nim');lookupSv('tr-date2','tr-sub','tr-sv2-info')">
+          <option value="">— selecionar —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Posto</label>
+        <input type="text" id="tr-sub-posto" readonly style="width:100%;background:#f5f5f5;cursor:default">
+      </div>
+      <div class="form-group">
+        <label>NIM</label>
+        <input type="text" id="tr-sub-nim" readonly style="width:100%;background:#f5f5f5;cursor:default">
+      </div>
+      <div class="form-group">
+        <label>Data em que o substituto serve por si</label>
+        <input type="date" id="tr-date2" oninput="lookupSv('tr-date2','tr-sub','tr-sv2-info')">
+      </div>
+    </div>
+    <div id="tr-sv2-info" style="font-size:.78rem;color:var(--muted);margin:-8px 0 10px 0;min-height:18px"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn btn-success" onclick="gerarTroca()">📄 Gerar Documento de Troca</button>
+      <button class="btn btn-outline" onclick="limparTroca()">🗑️ Limpar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PDF OVERLAY ═══════════════════ -->
+<div id="pdf-overlay">
+  <div class="pdf-box">
+    <button class="close-btn no-print" onclick="closePDF()">✕</button>
+    <div id="pdf-content"></div>
+    <div class="no-print" style="margin-top:24px;display:flex;gap:10px;justify-content:flex-end">
+      <div class="troca-confirm-block" style="display:none;align-items:center;gap:8px;margin-right:auto">
+        <input id="admin-pwd" type="password" placeholder="Palavra-passe admin"
+          style="border:1.5px solid #D1DBE8;border-radius:6px;padding:5px 10px;font-size:.8rem;width:190px">
+        <button id="btn-confirmar" class="btn btn-primary" onclick="confirmarTrocaAgora()">✓ Confirmar na Escala</button>
+      </div>
+      <button class="btn btn-success" onclick="imprimirColorido()">🖨️ Imprimir / Guardar PDF</button>
+      <button class="btn btn-outline" onclick="closePDF()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let SCHEDULE = {"DUARTE": {"2026-01-05": "SV", "2026-01-11": "SV", "2026-01-17": "SV", "2026-01-23": "SV", "2026-01-29": "SV", "2026-02-03": "SV", "2026-02-08": "FINO", "2026-02-14": "SV", "2026-02-20": "SV", "2026-02-26": "SV", "2026-03-04": "SV", "2026-03-10": "SV", "2026-03-15": "SV", "2026-03-21": "SV", "2026-03-26": "SV", "2026-04-02": "F", "2026-04-03": "F", "2026-04-04": "F", "2026-04-05": "F", "2026-04-06": "F", "2026-04-07": "F", "2026-04-08": "F", "2026-04-09": "F", "2026-04-10": "F", "2026-04-11": "F", "2026-04-12": "F", "2026-04-13": "SV", "2026-04-18": "SV", "2026-04-23": "T", "2026-04-24": "X", "2026-04-28": "SV", "2026-05-03": "SV", "2026-05-09": "SV", "2026-05-14": "SV", "2026-05-19": "SV", "2026-05-24": "SV", "2026-05-29": "F", "2026-05-30": "F", "2026-05-31": "F", "2026-06-01": "F", "2026-06-02": "F", "2026-06-03": "F", "2026-06-04": "F", "2026-06-05": "F", "2026-06-06": "F", "2026-06-07": "F", "2026-06-08": "SV", "2026-06-13": "SV", "2026-06-18": "SV", "2026-06-23": "SV", "2026-06-28": "SV", "2026-07-02": "SV", "2026-07-06": "SV", "2026-07-10": "SV", "2026-07-14": "SV", "2026-07-17": "F", "2026-07-18": "F", "2026-07-19": "F", "2026-07-20": "F", "2026-07-21": "F", "2026-07-22": "F", "2026-07-23": "F", "2026-07-24": "F", "2026-07-25": "F", "2026-07-26": "F", "2026-07-27": "F", "2026-07-28": "F", "2026-07-29": "F", "2026-07-30": "F", "2026-07-31": "F", "2026-08-01": "F", "2026-08-02": "F", "2026-08-03": "SV", "2026-08-08": "SV", "2026-08-13": "SV", "2026-08-18": "SV", "2026-08-23": "SV", "2026-08-28": "SV", "2026-09-03": "SV", "2026-09-08": "SV", "2026-09-13": "SV", "2026-09-18": "SV", "2026-09-24": "SV", "2026-09-29": "SV", "2026-10-01": "F", "2026-10-02": "F", "2026-10-03": "F", "2026-10-04": "F", "2026-10-05": "F", "2026-10-06": "F", "2026-10-07": "F", "2026-10-08": "SV", "2026-10-14": "SV", "2026-10-19": "SV", "2026-10-24": "SV", "2026-10-29": "SV", "2026-11-04": "SV", "2026-11-10": "SV", "2026-11-16": "SV", "2026-11-22": "SV", "2026-11-27": "SV", "2026-11-30": "SV", "2026-12-04": "SV", "2026-12-08": "SV", "2026-12-12": "SV", "2026-12-17": "SV", "2026-12-29": "SV", "2027-01-01": "SV", "2027-01-07": "SV", "2027-01-13": "SV", "2027-01-19": "SV", "2027-01-25": "SV", "2027-01-31": "SV"}, "REIS": {"2026-01-04": "SV", "2026-01-10": "SV", "2026-01-16": "SV", "2026-01-22": "SV", "2026-01-28": "SV", "2026-01-30": "F", "2026-01-31": "F", "2026-02-01": "F", "2026-02-02": "F", "2026-02-03": "F", "2026-02-04": "F", "2026-02-05": "F", "2026-02-06": "F", "2026-02-07": "F", "2026-02-08": "F", "2026-02-09": "F", "2026-02-10": "F", "2026-02-11": "F", "2026-02-12": "F", "2026-02-13": "SV", "2026-02-19": "SV", "2026-02-25": "SV", "2026-03-03": "SV", "2026-03-09": "SV", "2026-03-14": "SV", "2026-03-20": "SV", "2026-03-25": "SV", "2026-03-31": "SV", "2026-04-05": "SV", "2026-04-07": "X", "2026-04-10": "T", "2026-04-13": "F", "2026-04-14": "F", "2026-04-15": "F", "2026-04-16": "F", "2026-04-17": "F", "2026-04-18": "F", "2026-04-19": "F", "2026-04-20": "SV", "2026-04-25": "SV", "2026-04-30": "SV", "2026-05-05": "SV", "2026-05-10": "SV", "2026-05-15": "SV", "2026-05-20": "T", "2026-05-22": "X", "2026-05-25": "SV", "2026-05-30": "SV", "2026-06-04": "SV", "2026-06-10": "SV", "2026-06-15": "SV", "2026-06-20": "SV", "2026-06-25": "SV", "2026-07-01": "F", "2026-07-02": "F", "2026-07-03": "F", "2026-07-04": "F", "2026-07-05": "F", "2026-07-06": "F", "2026-07-07": "F", "2026-07-08": "F", "2026-07-09": "F", "2026-07-10": "F", "2026-07-11": "F", "2026-07-12": "F", "2026-07-13": "F", "2026-07-14": "F", "2026-07-15": "F", "2026-07-16": "F", "2026-07-17": "SV", "2026-07-21": "SV", "2026-07-25": "SV", "2026-07-29": "SV", "2026-08-02": "SV", "2026-08-07": "SV", "2026-08-12": "SV", "2026-08-16": "SV", "2026-08-21": "SV", "2026-08-26": "SV", "2026-08-31": "SV", "2026-09-05": "SV", "2026-09-10": "SV", "2026-09-15": "SV", "2026-09-20": "SV", "2026-09-25": "SV", "2026-10-01": "SV", "2026-10-06": "SV", "2026-10-12": "SV", "2026-10-17": "SV", "2026-10-22": "SV", "2026-10-27": "SV", "2026-11-01": "SV", "2026-11-07": "SV", "2026-11-13": "SV", "2026-11-19": "SV", "2026-11-25": "SV", "2026-11-29": "SV", "2026-12-03": "SV", "2026-12-07": "SV", "2026-12-11": "SV", "2026-12-16": "SV", "2026-12-21": "SV", "2026-12-28": "SV", "2026-12-31": "SV", "2027-01-06": "SV", "2027-01-12": "SV", "2027-01-18": "SV", "2027-01-24": "SV", "2027-01-30": "SV"}, "FINO": {"2026-01-03": "SV", "2026-01-09": "SV", "2026-01-15": "SV", "2026-01-21": "SV", "2026-01-27": "SV", "2026-02-02": "SV", "2026-02-07": "DUARTE", "2026-02-12": "SV", "2026-02-18": "SV", "2026-02-24": "SV", "2026-03-02": "SV", "2026-03-08": "SV", "2026-03-13": "SV", "2026-03-19": "SV", "2026-03-24": "SV", "2026-03-28": "X", "2026-03-29": "T", "2026-04-03": "SV", "2026-04-07": "T", "2026-04-08": "T", "2026-04-10": "X", "2026-04-14": "SV", "2026-04-19": "SV", "2026-04-23": "X", "2026-04-24": "DT", "2026-04-29": "SV", "2026-05-04": "SV", "2026-05-07": "F", "2026-05-08": "F", "2026-05-09": "F", "2026-05-10": "F", "2026-05-11": "F", "2026-05-12": "F", "2026-05-13": "F", "2026-05-14": "F", "2026-05-15": "F", "2026-05-16": "F", "2026-05-17": "F", "2026-05-18": "F", "2026-05-19": "F", "2026-05-20": "F", "2026-05-21": "F", "2026-05-22": "F", "2026-05-23": "F", "2026-05-24": "F", "2026-05-25": "F", "2026-05-26": "F", "2026-05-27": "F", "2026-05-28": "F", "2026-05-29": "SV", "2026-06-03": "SV", "2026-06-09": "SV", "2026-06-14": "SV", "2026-06-19": "SV", "2026-06-24": "SV", "2026-06-29": "SV", "2026-07-03": "SV", "2026-07-07": "SV", "2026-07-11": "SV", "2026-07-15": "SV", "2026-07-20": "SV", "2026-07-24": "SV", "2026-07-28": "SV", "2026-08-01": "SV", "2026-08-06": "SV", "2026-08-11": "SV", "2026-08-17": "F", "2026-08-18": "F", "2026-08-19": "F", "2026-08-20": "F", "2026-08-21": "F", "2026-08-22": "F", "2026-08-23": "F", "2026-08-24": "F", "2026-08-25": "F", "2026-08-26": "F", "2026-08-27": "F", "2026-08-28": "F", "2026-08-29": "F", "2026-08-30": "F", "2026-08-31": "F", "2026-09-01": "SV", "2026-09-06": "SV", "2026-09-11": "SV", "2026-09-16": "SV", "2026-09-22": "SV", "2026-09-27": "SV", "2026-10-03": "SV", "2026-10-09": "SV", "2026-10-15": "SV", "2026-10-20": "SV", "2026-10-25": "SV", "2026-10-30": "SV", "2026-11-05": "SV", "2026-11-11": "SV", "2026-11-17": "SV", "2026-11-23": "SV", "2026-11-28": "SV", "2026-12-01": "SV", "2026-12-05": "SV", "2026-12-09": "SV", "2026-12-13": "SV", "2026-12-18": "SV", "2026-12-30": "SV", "2027-01-02": "SV", "2027-01-08": "SV", "2027-01-14": "SV", "2027-01-20": "SV", "2027-01-26": "SV"}, "MORGADO": {"2026-01-06": "SV", "2026-01-12": "SV", "2026-01-18": "SV", "2026-01-24": "SV", "2026-01-30": "SV", "2026-02-04": "SV", "2026-02-09": "SV", "2026-02-15": "SV", "2026-02-21": "SV", "2026-02-27": "SV", "2026-03-05": "SV", "2026-03-11": "SV", "2026-03-17": "SV", "2026-03-20": "F", "2026-03-21": "F", "2026-03-22": "F", "2026-03-23": "F", "2026-03-24": "F", "2026-03-25": "F", "2026-03-26": "F", "2026-03-27": "F", "2026-03-28": "F", "2026-03-29": "F", "2026-03-30": "SV", "2026-04-04": "SV", "2026-04-09": "SV", "2026-04-15": "SV", "2026-04-21": "SV", "2026-04-26": "SV", "2026-05-01": "SV", "2026-05-06": "SV", "2026-05-11": "SV", "2026-05-16": "SV", "2026-05-21": "SV", "2026-05-26": "SV", "2026-05-31": "SV", "2026-06-05": "SV", "2026-06-11": "SV", "2026-06-16": "SV", "2026-06-21": "SV", "2026-06-26": "SV", "2026-06-30": "SV", "2026-07-04": "SV", "2026-07-08": "SV", "2026-07-12": "SV", "2026-07-18": "SV", "2026-07-22": "SV", "2026-07-26": "SV", "2026-07-30": "SV", "2026-08-04": "SV", "2026-08-09": "SV", "2026-08-14": "SV", "2026-08-19": "SV", "2026-08-24": "SV", "2026-08-29": "SV", "2026-09-04": "F", "2026-09-05": "F", "2026-09-06": "F", "2026-09-07": "F", "2026-09-08": "F", "2026-09-09": "F", "2026-09-10": "F", "2026-09-11": "F", "2026-09-12": "F", "2026-09-13": "F", "2026-09-14": "F", "2026-09-15": "F", "2026-09-16": "F", "2026-09-17": "F", "2026-09-18": "F", "2026-09-19": "F", "2026-09-20": "F", "2026-09-21": "SV", "2026-09-26": "SV", "2026-10-02": "SV", "2026-10-07": "SV", "2026-10-13": "SV", "2026-10-18": "SV", "2026-10-23": "SV", "2026-10-28": "SV", "2026-11-03": "SV", "2026-11-09": "SV", "2026-11-15": "SV", "2026-11-21": "SV", "2026-11-27": "F", "2026-11-28": "F", "2026-11-29": "F", "2026-11-30": "F", "2026-12-01": "F", "2026-12-02": "F", "2026-12-03": "F", "2026-12-04": "F", "2026-12-05": "F", "2026-12-06": "F", "2026-12-07": "F", "2026-12-08": "F", "2026-12-09": "F", "2026-12-10": "F", "2026-12-11": "F", "2026-12-12": "F", "2026-12-13": "F", "2026-12-14": "SV", "2026-12-19": "SV", "2026-12-22": "SV", "2026-12-25": "SV", "2027-01-04": "SV", "2027-01-10": "SV", "2027-01-16": "SV", "2027-01-22": "SV", "2027-01-28": "SV"}, "NUNES": {"2026-01-02": "SV", "2026-01-08": "SV", "2026-01-14": "SV", "2026-01-20": "SV", "2026-01-26": "SV", "2026-02-01": "AFONSO", "2026-02-06": "SV", "2026-02-11": "SV", "2026-02-17": "SV", "2026-02-23": "SV", "2026-03-01": "SV", "2026-03-07": "SV", "2026-03-09": "F", "2026-03-10": "F", "2026-03-11": "F", "2026-03-12": "F", "2026-03-13": "F", "2026-03-14": "F", "2026-03-15": "F", "2026-03-16": "SV", "2026-03-22": "SV", "2026-03-27": "SV", "2026-04-01": "SV", "2026-04-06": "T", "2026-04-07": "T", "2026-04-08": "X", "2026-04-11": "SV", "2026-04-16": "SV", "2026-04-20": "F", "2026-04-21": "F", "2026-04-22": "F", "2026-04-23": "F", "2026-04-24": "F", "2026-04-25": "F", "2026-04-26": "F", "2026-04-27": "SV", "2026-05-02": "SV", "2026-05-07": "X", "2026-05-08": "DT", "2026-05-13": "SV", "2026-05-18": "SV", "2026-05-23": "SV", "2026-05-28": "SV", "2026-06-02": "SV", "2026-06-07": "SV", "2026-06-12": "SV", "2026-06-17": "SV", "2026-06-22": "SV", "2026-06-27": "SV", "2026-07-02": "LP", "2026-07-03": "LP", "2026-07-04": "LP", "2026-07-05": "LP", "2026-07-06": "LP", "2026-07-07": "LP", "2026-07-08": "LP", "2026-07-09": "LP", "2026-07-10": "LP", "2026-07-11": "LP", "2026-07-12": "LP", "2026-07-13": "LP", "2026-07-14": "LP", "2026-07-15": "LP", "2026-07-16": "SV", "2026-07-20": "LP", "2026-07-21": "LP", "2026-07-22": "LP", "2026-07-23": "LP", "2026-07-24": "LP", "2026-07-25": "LP", "2026-07-26": "LP", "2026-07-27": "LP", "2026-07-28": "LP", "2026-07-29": "LP", "2026-07-30": "LP", "2026-07-31": "LP", "2026-08-01": "LP", "2026-08-02": "LP", "2026-08-03": "LP", "2026-08-04": "LP", "2026-08-05": "LP", "2026-08-06": "LP", "2026-08-07": "LP", "2026-08-08": "LP", "2026-08-09": "LP", "2026-08-10": "F", "2026-08-11": "F", "2026-08-12": "F", "2026-08-13": "F", "2026-08-14": "F", "2026-08-15": "F", "2026-08-16": "F", "2026-08-17": "SV", "2026-08-22": "SV", "2026-08-27": "SV", "2026-09-02": "SV", "2026-09-07": "SV", "2026-09-12": "SV", "2026-09-17": "SV", "2026-09-23": "SV", "2026-09-28": "SV", "2026-10-04": "SV", "2026-10-10": "SV", "2026-10-16": "F", "2026-10-17": "F", "2026-10-18": "F", "2026-10-19": "F", "2026-10-20": "F", "2026-10-21": "F", "2026-10-22": "F", "2026-10-23": "F", "2026-10-24": "F", "2026-10-25": "F", "2026-10-26": "F", "2026-10-27": "F", "2026-10-28": "F", "2026-10-29": "F", "2026-10-30": "F", "2026-10-31": "F", "2026-11-01": "F", "2026-11-02": "SV", "2026-11-08": "SV", "2026-11-14": "SV", "2026-11-20": "SV", "2026-11-26": "SV", "2026-11-29": "LP", "2026-11-30": "LP", "2026-12-01": "LP", "2026-12-02": "LP", "2026-12-03": "LP", "2026-12-04": "LP", "2026-12-05": "LP", "2026-12-06": "LP", "2026-12-07": "LP", "2026-12-08": "LP", "2026-12-09": "LP", "2026-12-10": "LP", "2026-12-11": "LP", "2026-12-12": "LP", "2026-12-13": "LP", "2026-12-14": "LP", "2026-12-15": "LP", "2026-12-16": "LP", "2026-12-17": "LP", "2026-12-18": "LP", "2026-12-19": "LP", "2026-12-20": "LP", "2026-12-21": "LP", "2026-12-22": "LP", "2026-12-23": "LP", "2026-12-24": "LP", "2026-12-25": "LP", "2026-12-26": "LP", "2026-12-27": "LP", "2026-12-28": "LP", "2027-01-03": "SV", "2027-01-09": "SV", "2027-01-15": "SV", "2027-01-21": "SV", "2027-01-27": "SV"}, "AFONSO": {"2026-01-01": "SV", "2026-01-07": "SV", "2026-01-13": "SV", "2026-01-19": "SV", "2026-01-25": "SV", "2026-01-31": "NUNES", "2026-02-05": "SV", "2026-02-10": "SV", "2026-02-16": "SV", "2026-02-22": "SV", "2026-02-28": "SV", "2026-03-06": "SV", "2026-03-12": "SV", "2026-03-18": "SV", "2026-03-23": "SV", "2026-03-28": "T", "2026-03-29": "X", "2026-04-02": "SV", "2026-04-06": "X", "2026-04-07": "T", "2026-04-12": "SV", "2026-04-17": "SV", "2026-04-22": "SV", "2026-04-28": "LM", "2026-04-29": "F", "2026-04-30": "F", "2026-05-01": "F", "2026-05-02": "F", "2026-05-03": "F", "2026-05-04": "F", "2026-05-05": "F", "2026-05-06": "F", "2026-05-07": "T", "2026-05-08": "X", "2026-05-12": "SV", "2026-05-17": "SV", "2026-05-20": "X", "2026-05-22": "DT", "2026-05-27": "SV", "2026-06-01": "SV", "2026-06-06": "SV", "2026-06-09": "F", "2026-06-10": "F", "2026-06-11": "F", "2026-06-12": "F", "2026-06-13": "F", "2026-06-14": "F", "2026-06-15": "F", "2026-06-16": "F", "2026-06-17": "F", "2026-06-18": "F", "2026-06-19": "F", "2026-06-20": "F", "2026-06-21": "F", "2026-06-22": "F", "2026-06-23": "F", "2026-06-24": "F", "2026-06-25": "F", "2026-06-26": "F", "2026-06-27": "F", "2026-06-28": "F", "2026-06-29": "F", "2026-06-30": "F", "2026-07-01": "SV", "2026-07-05": "SV", "2026-07-09": "SV", "2026-07-13": "SV", "2026-07-19": "SV", "2026-07-23": "SV", "2026-07-27": "SV", "2026-07-31": "SV", "2026-08-05": "SV", "2026-08-10": "SV", "2026-08-15": "SV", "2026-08-20": "SV", "2026-08-25": "SV", "2026-08-30": "SV", "2026-09-04": "SV", "2026-09-09": "SV", "2026-09-14": "SV", "2026-09-19": "SV", "2026-09-22": "F", "2026-09-23": "F", "2026-09-24": "F", "2026-09-25": "F", "2026-09-26": "F", "2026-09-27": "F", "2026-09-28": "F", "2026-09-29": "F", "2026-09-30": "SV", "2026-10-05": "SV", "2026-10-11": "SV", "2026-10-16": "SV", "2026-10-21": "SV", "2026-10-26": "SV", "2026-10-31": "SV", "2026-11-06": "SV", "2026-11-12": "SV", "2026-11-18": "SV", "2026-11-24": "SV", "2026-12-02": "SV", "2026-12-06": "SV", "2026-12-10": "SV", "2026-12-15": "SV", "2026-12-20": "SV", "2026-12-23": "SV", "2026-12-26": "SV", "2027-01-05": "SV", "2027-01-11": "SV", "2027-01-17": "SV", "2027-01-23": "SV", "2027-01-29": "SV"}};
+let TROCAS = [];
+const API_URL = "https://script.google.com/macros/s/AKfycbyhRZ_hq0hWNBVIywmUMcaZSwf-FyO8dHBNmQ_8FxzuCS1RekL2XtZJCTHdrBKY4oPB/exec";
+
+async function loadFromAPI() {
+  return new Promise((resolve) => {
+    showLoading(true);
+    const cbName = 'cb_' + Date.now();
+    const script = document.createElement('script');
+    window[cbName] = function(data) {
+      try {
+        if (data.status === "ok" && data.schedule) {
+          SCHEDULE = data.schedule;
+          document.getElementById('api-status').innerHTML = '<span style="color:#2d7a4e">✓ Escala atualizada do Google Sheets</span>';
+          document.getElementById('last-update').textContent = 'Atualizado: ' + new Date().toLocaleString('pt-PT');
+          if (data.trocas) TROCAS = data.trocas;
+          updateBanner();
+          renderHistorico();
+          loadSituacoes();
+        } else {
+          throw new Error(data.error || 'Erro desconhecido');
+        }
+      } catch(e) {
+        document.getElementById('api-status').innerHTML = '<span style="color:#E67E22">⚠ A usar dados locais</span>';
+      updateBanner();
+      } finally {
+        delete window[cbName];
+        document.body.removeChild(script);
+        showLoading(false);
+        runConsulta();
+        buildCalendar();
+        resolve();
+      }
+    };
+    script.onerror = function() {
+      document.getElementById('api-status').innerHTML = '<span style="color:#E67E22">⚠ A usar dados locais</span>';
+      updateBanner();
+      delete window[cbName];
+      document.body.removeChild(script);
+      showLoading(false);
+      runConsulta();
+      buildCalendar();
+      resolve();
+    };
+    script.src = API_URL + '?action=get&callback=' + cbName;
+    document.body.appendChild(script);
+  });
+}
+
+async function confirmarTrocaAPI(req, sub, d1, d2) {
+  const pwd = document.getElementById('admin-pwd').value;
+  if (!pwd) { alert('Introduza a palavra-passe de administrador.'); return false; }
+  try {
+    showLoading(true);
+    // Apps Script não aceita POST com CORS, usar GET com parâmetros
+    const cbName = 'cb_post_' + Date.now();
+    const params = new URLSearchParams({
+      action: 'troca',
+      password: pwd,
+      req, sub,
+      date1: d1,
+      date2: d2,
+      callback: cbName
+    });
+    return await new Promise((resolve) => {
+      const script = document.createElement('script');
+      window[cbName] = function(data) {
+        delete window[cbName];
+        document.body.removeChild(script);
+        showLoading(false);
+        if (data.status === 'ok') {
+          alert('✓ Troca confirmada! A escala foi atualizada para todos.');
+          loadFromAPI();
+          resolve(true);
+        } else {
+          alert('Erro: ' + (data.error || 'Palavra-passe incorreta'));
+          resolve(false);
+        }
+      };
+      script.onerror = function() {
+        delete window[cbName];
+        document.body.removeChild(script);
+        showLoading(false);
+        alert('Erro de ligação ao Google Sheets.');
+        resolve(false);
+      };
+      script.src = API_URL + '?' + params.toString();
+      document.body.appendChild(script);
+    });
+  } catch(e) {
+    showLoading(false);
+    alert('Erro: ' + e.message);
+    return false;
+  }
+}
+let SHEET_ID = localStorage.getItem('gsheet_id') || '';
+
+async function loadFromSheets() {
+  if (!SHEET_ID) { runConsulta(); buildCalendar(); return; }
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Escala`;
+  try {
+    showLoading(true);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Erro a aceder ao Google Sheets');
+    const text = await res.text();
+    parseCSV(text);
+    document.getElementById('sheet-status').innerHTML = `<span style="color:#2d7a4e">✓ Dados carregados do Google Sheets</span>`;
+    document.getElementById('last-update').textContent = 'Atualizado: ' + new Date().toLocaleString('pt-PT');
+    runConsulta();
+    buildCalendar();
+  } catch(e) {
+    document.getElementById('sheet-status').innerHTML = `<span style="color:#D94040">⚠ ${e.message} — a usar dados do ficheiro</span>`;
+    runConsulta(); buildCalendar();
+  } finally {
+    showLoading(false);
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').slice(1);
+  const newSched = {};
+  lines.forEach(line => {
+    const cols = line.replace(/^"|"$/g,'').split('","');
+    if (cols.length < 3) return;
+    const [d, p, v] = cols.map(c => c.replace(/"/g,'').trim());
+    const person = p.toUpperCase();
+    if (!newSched[person]) newSched[person] = {};
+    newSched[person][d] = v.toUpperCase();
+  });
+  SCHEDULE = newSched;
+}
+
+function showLoading(on) {
+  const el = document.getElementById('loading-bar');
+  if (el) el.style.display = on ? 'block' : 'none';
+}
+
+function saveSheetId() {
+  const id = document.getElementById('sheet-id-input').value.trim();
+  if (!id) return;
+  SHEET_ID = id;
+  localStorage.setItem('gsheet_id', id);
+  loadFromSheets();
+}
+
+const PEOPLE = ['DUARTE','REIS','FINO','MORGADO','NUNES','AFONSO'];
+const COLORS = {DUARTE:'#1E4D8C',REIS:'#C0392B',FINO:'#27AE60',MORGADO:'#8E44AD',NUNES:'#D35400',AFONSO:'#2980B9'};
+const MILITAR_DATA = {
+  DUARTE:  { posto:'Cabo',   nim:'2090073', nome:'Flávio Duarte' },
+  REIS:    { posto:'Cabo',   nim:'2000517', nome:'Elder Reis'      },
+  FINO:    { posto:'Cabo',   nim:'2070967', nome:'Rui Fino'      },
+  MORGADO: { posto:'GPrinc', nim:'2120513', nome:'António Morgado'       },
+  NUNES:   { posto:'GPrinc', nim:'2150233', nome:'Carlos Nunes'         },
+  AFONSO:  { posto:'GPrinc', nim:'2150490', nome:'Miguel Afonso'        },
+};
+function fillMilitar(selectId, postoId, nimId) {
+  const key = document.getElementById(selectId).value;
+  const d = MILITAR_DATA[key];
+  if (d) {
+    document.getElementById(postoId).value = d.posto;
+    document.getElementById(nimId).value   = d.nim;
+  } else {
+    document.getElementById(postoId).value = '';
+    document.getElementById(nimId).value   = '';
+  }
+}
+const DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// build checkboxes
+const checks = document.getElementById('people-checks');
+PEOPLE.forEach(p => {
+  const lbl = document.createElement('label');
+  lbl.className = 'cb-label checked';
+  lbl.innerHTML = `<input type="checkbox" value="${p}" checked><span class="dot" style="background:${COLORS[p]}"></span>${p.charAt(0)+p.slice(1).toLowerCase()}`;
+  lbl.querySelector('input').addEventListener('change', function(){
+    lbl.classList.toggle('checked', this.checked);
+  });
+  checks.appendChild(lbl);
+});
+
+function getSelectedPeople(){
+  return [...checks.querySelectorAll('input:checked')].map(i=>i.value);
+}
+function selectAll(){ checks.querySelectorAll('input').forEach(i=>{i.checked=true; i.closest('label').classList.add('checked');}); }
+function selectNone(){ checks.querySelectorAll('input').forEach(i=>{i.checked=false; i.closest('label').classList.remove('checked');}); }
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${t}')"]`).classList.add('active');
+  document.getElementById(`tab-${t}`).classList.add('active');
+  if(t==='historico') renderHistorico();
+  if(t==='situacoes') loadSituacoes();
+}
+
+function typeBadge(v){
+  const u=v.toUpperCase();
+  if(u==='SV') return `<span class="badge-sv">⚡ Serviço</span>`;
+  if(u==='F')  return `<span class="badge-f">🏖️ Férias</span>`;
+  if(u==='LP') return `<span class="badge-lp">👶 Lic. Parental</span>`;
+  return `<span class="badge-ot">${v}</span>`;
+}
+
+function getEntries(startStr, endStr, people, typeFilter){
+  const s=new Date(startStr), e=new Date(endStr);
+  const rows=[];
+  const seen=new Set();
+  for(const p of people){
+    const data=SCHEDULE[p]||{};
+    for(const [dateStr,val] of Object.entries(data)){
+      const d=new Date(dateStr);
+      if(d<s||d>e) continue;
+      const v=val.toUpperCase();
+      // resolve troca: se o valor é nome de outro militar, é SV com troca
+      const isTroca = PEOPLE.includes(v);
+      const actualType = isTroca ? 'SV' : v;
+      if(typeFilter!=='all' && actualType!==typeFilter) continue;
+      const key=dateStr+p;
+      if(seen.has(key)) continue; seen.add(key);
+      if(isTroca){
+        // cedente: mostra que cedeu
+        rows.push({date:dateStr, person:p, val:val, type:'SV', troca:true, cedeu:true, substituto:v});
+        // substituto: mostra que fez o serviço (se estiver nos filtros)
+        const subKey=dateStr+v;
+        if(people.includes(v) && !seen.has(subKey)){
+          seen.add(subKey);
+          rows.push({date:dateStr, person:v, val:val, type:'SV', troca:true, cedeu:false, substituto:p});
+        }
+      } else {
+        rows.push({date:dateStr, person:p, val:val, type:actualType, troca:false, substituto:null});
+      }
+    }
+  }
+  rows.sort((a,b)=>a.date.localeCompare(b.date)||a.person.localeCompare(b.person));
+  return rows;
+}
+
+function runConsulta(){
+  const s=document.getElementById('start-date').value;
+  const e=document.getElementById('end-date').value;
+  const people=getSelectedPeople();
+  const tf=document.getElementById('filter-type').value;
+  if(!s||!e||!people.length){ alert('Selecione datas e pelo menos um militar.'); return; }
+
+  const rows=getEntries(s,e,people,tf);
+
+  // stats — contar serviços efectivos (SV + trocas)
+  const counts={SV:{},F:{},LP:{},TROCA_DEU:{},TROCA_FEZ:{}};
+  PEOPLE.forEach(p=>{counts.SV[p]=0;counts.F[p]=0;counts.LP[p]=0;counts.TROCA_DEU[p]=0;counts.TROCA_FEZ[p]=0;});
+  rows.forEach(r=>{
+    if(r.troca){
+      // cedente: deu o serviço (não conta como SV)
+      counts.TROCA_DEU[r.person]++;
+      // substituto: fez o serviço (conta como SV efectivo)
+      const sub=r.substituto;
+      if(sub && counts.SV[sub]!==undefined) counts.SV[sub]++;
+    } else if(counts[r.type]!==undefined){
+      counts[r.type][r.person]++;
+    }
+  });
+
+  const sc=document.getElementById('stats-container');
+  if(tf==='all'||tf==='SV'){
+    sc.innerHTML=`<div class="card"><h2>Totais no Período</h2><div class="stats-row">${
+      people.map(p=>`<div class="stat">
+        <div class="num" style="color:${COLORS[p]}">${counts.SV[p]}</div>
+        <div class="lbl" style="color:${COLORS[p]}">${p.charAt(0)+p.slice(1).toLowerCase()}</div>
+        <div class="lbl">Serviços</div>
+      </div>`).join('')
+    }</div></div>`;
+  } else sc.innerHTML='';
+
+}
+
+function exportPDF(){
+  const s=document.getElementById('start-date').value;
+  const e=document.getElementById('end-date').value;
+  const people=getSelectedPeople();
+  if(!s||!e||!people.length){ alert('Selecione datas e pelo menos um militar.'); return; }
+
+  const DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const MESES_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const NOMES_FULL={DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+  const POSTOS={DUARTE:'Cabo',REIS:'Cabo',FINO:'Cabo',MORGADO:'GPrinc',NUNES:'GPrinc',AFONSO:'GPrinc'};
+  const NIMS={DUARTE:'2090073',REIS:'2000517',FINO:'2070967',MORGADO:'2120513',NUNES:'2150233',AFONSO:'2150490'};
+  const COL_SV='#92D050'; const COL_F='#B18CD9'; const COL_LP='#6FA8DC'; const COL_WK='#BFBFBF'; const COL_HD='#C00000';
+
+  // agrupar dias por mês no período
+  const start_d=new Date(s+' 12:00');
+  const end_d=new Date(e+' 12:00');
+
+  // construir meses
+  let months=[];
+  let cur=new Date(start_d.getFullYear(), start_d.getMonth(), 1);
+  while(cur<=end_d){
+    months.push({y:cur.getFullYear(), m:cur.getMonth()});
+    cur=new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+
+  let tablesHtml='';
+
+  months.forEach(({y,m})=>{
+    const daysInMonth=new Date(y,m+1,0).getDate();
+    // dias dentro do período seleccionado
+    const days=[];
+    for(let d=1;d<=daysInMonth;d++){
+      const dt=new Date(y,m,d);
+      if(dt>=new Date(start_d.getFullYear(),start_d.getMonth(),start_d.getDate()) &&
+         dt<=new Date(end_d.getFullYear(),end_d.getMonth(),end_d.getDate())){
+        days.push(d);
+      }
+    }
+    if(!days.length) return;
+
+    const colW = Math.max(14, Math.min(22, Math.floor(680/days.length)));
+
+    // cabeçalho dos dias
+    let headDays='';
+    days.forEach(d=>{
+      const dt=new Date(y,m,d);
+      const wd=dt.getDay();
+      const isWk=wd===0||wd===6;
+      const bg=isWk?COL_WK:'#D9E1F2';
+      const txt=['D','S','T','Q','Q','S','S'][wd];
+      headDays+=`<th style="width:${colW}px;min-width:${colW}px;max-width:${colW}px;background:${bg};border:1px solid #999;padding:2px 0;text-align:center;font-size:8px;font-weight:700">${txt}</th>`;
+    });
+    let headNums='';
+    days.forEach(d=>{
+      const dt=new Date(y,m,d);
+      const isWk=dt.getDay()===0||dt.getDay()===6;
+      const bg=isWk?COL_WK:'#D9E1F2';
+      headNums+=`<th style="background:${bg};border:1px solid #999;padding:2px 0;text-align:center;font-size:8px;font-weight:700">${d}</th>`;
+    });
+
+    // linhas dos militares
+    let rows='';
+    people.forEach(p=>{
+      let cells='';
+      days.forEach(d=>{
+        const dt=new Date(y,m,d);
+        const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isWk=dt.getDay()===0||dt.getDay()===6;
+        const v=(SCHEDULE[p]||{})[ds]||'';
+        const u=v.toUpperCase();
+        let bg=isWk?'#EDEDED':'#fff';
+        let txt=''; let fw='normal'; let color='#000';
+        if(u==='SV'||u==='sv'){bg=COL_SV;txt='sv';fw='bold';color='#1a5c2a';}
+        else if(u==='F'){bg=COL_F;txt='F';fw='bold';color='#4a1a6b';}
+        else if(u==='LP'){bg=COL_LP;txt='LP';fw='bold';color='#1a3d5c';}
+        else if(u==='LM'){bg='#FFE699';txt='LM';fw='bold';}
+        else if(u&&PEOPLE.includes(u)){bg=COL_SV;txt=u.charAt(0)+u.slice(1,3).toLowerCase();fw='bold';color='#1a5c2a';}
+        else if(isWk) bg=COL_WK;
+        cells+=`<td style="background:${bg};border:1px solid #bbb;text-align:center;font-size:7px;font-weight:${fw};color:${color};padding:1px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact">${txt}</td>`;
+      });
+      rows+=`<tr>
+        <td style="border:1px solid #bbb;padding:2px 4px;font-size:8px;white-space:nowrap;background:#D9E1F2;font-weight:600">${POSTOS[p]}</td>
+        <td style="border:1px solid #bbb;padding:2px 4px;font-size:8px;white-space:nowrap;background:#D9E1F2">${NIMS[p]}</td>
+        <td style="border:1px solid #bbb;padding:2px 4px;font-size:8px;white-space:nowrap;background:#D9E1F2;font-weight:700">${p}</td>
+        ${cells}
+      </tr>`;
+    });
+
+    tablesHtml+=`
+      <div style="margin-bottom:20px;page-break-inside:avoid">
+        <div style="background:#C00000;color:#fff;text-align:center;font-weight:700;font-size:11px;padding:4px;letter-spacing:.1em">${MESES_PT[m].toUpperCase()} ${y}</div>
+        <table style="border-collapse:collapse;width:100%;table-layout:fixed">
+          <thead>
+            <tr>
+              <th style="background:#D9E1F2;border:1px solid #999;padding:2px 3px;font-size:8px;width:44px">POSTO</th>
+              <th style="background:#D9E1F2;border:1px solid #999;padding:2px 3px;font-size:8px;width:52px">NR</th>
+              <th style="background:#D9E1F2;border:1px solid #999;padding:2px 3px;font-size:8px;width:52px">APELIDO</th>
+              ${headNums}
+            </tr>
+            <tr>
+              <th style="background:#D9E1F2;border:1px solid #999" colspan="3"></th>
+              ${headDays}
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="font-size:8px;color:#555;margin-top:3px;display:flex;gap:12px">
+          <span><span style="background:${COL_SV};padding:1px 6px;border:1px solid #999">&nbsp;</span> Serviço</span>
+          <span><span style="background:${COL_F};padding:1px 6px;border:1px solid #999">&nbsp;</span> Férias</span>
+          <span><span style="background:${COL_LP};padding:1px 6px;border:1px solid #999">&nbsp;</span> Lic. Parental</span>
+          <span><span style="background:${COL_WK};padding:1px 6px;border:1px solid #999">&nbsp;</span> Fim de semana</span>
+        </div>
+      </div>`;
+  });
+
+  const ds=start_d.toLocaleDateString('pt-PT');
+  const de=end_d.toLocaleDateString('pt-PT');
+
+  document.getElementById('pdf-content').innerHTML=`
+    <div style="font-family:'Calibri',sans-serif;color:#000;max-width:900px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.05em">ESCALA DE SERVIÇO — OPERADORES DE TRÂNSITO 2026</div>
+        <div style="font-size:10px;color:#555;margin-top:3px">Período: ${ds} a ${de} · Gerado em ${new Date().toLocaleDateString('pt-PT')}</div>
+      </div>
+      ${tablesHtml}
+    </div>`;
+  document.querySelector('.troca-confirm-block').style.display='none';
+  document.getElementById('pdf-overlay').classList.add('show');
+}
+function exportCalPDF(){
+  buildCalendar();
+  setTimeout(()=>{
+    const cal=document.getElementById('cal-container').innerHTML;
+    document.getElementById('pdf-content').innerHTML=`
+      <div style="font-family:'Inter',sans-serif">
+        <h2 style="color:#1E2D45;margin-bottom:16px">Calendário da Escala 2026</h2>
+        ${cal}
+      </div>`;
+    document.querySelector('.troca-confirm-block').style.display='none';
+    document.getElementById('pdf-overlay').classList.add('show');
+  },100);
+}
+
+function buildCalendar(){
+  const ms=parseInt(document.getElementById('cal-month-start').value);
+  const me=parseInt(document.getElementById('cal-month-end').value);
+  const person=document.getElementById('cal-person').value;
+  const persons=person==='all'?PEOPLE:[person];
+  let html='';
+  for(let mo=ms;mo<=me;mo++){
+    const firstDay=new Date(2026,mo-1,1).getDay();
+    const days=new Date(2026,mo,0).getDate();
+    html+=`<div class="cal-month"><div class="cal-month-title">${MESES[mo-1]} 2026</div><div class="cal-grid">`;
+    DIAS.forEach(d=>{ html+=`<div class="cal-hdr">${d}</div>`; });
+    for(let i=0;i<firstDay;i++) html+=`<div class="cal-cell other-month"></div>`;
+    for(let d=1;d<=days;d++){
+      const date=new Date(2026,mo-1,d);
+      const isWknd=date.getDay()===0||date.getDay()===6;
+      const dateStr=`2026-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let entries='';
+      for(const p of persons){
+        const v=SCHEDULE[p]?.[dateStr];
+        if(!v) continue;
+        const u=v.toUpperCase();
+        let cls, label;
+        if(u==='SV'||u==='sv'){cls='sv';label=person==='all'?p.charAt(0)+p.slice(1).toLowerCase():'SV';}
+        else if(u==='F'){cls='f';label='F';}
+        else if(u==='LP'){cls='lp';label='LP';}
+        else if(PEOPLE.includes(u)){cls='troca';label=person==='all'?`↔${p.charAt(0)+p.slice(1,3).toLowerCase()}`:`↔${u.charAt(0)+u.slice(1,3).toLowerCase()}`;}
+        else{cls='other';label=v;}
+        entries+=`<div class="entry ${cls}">${label}</div>`;
+      }
+      html+=`<div class="cal-cell${isWknd?' weekend':''}"><div class="day-num">${d}</div><div class="entries">${entries}</div></div>`;
+    }
+    const total=firstDay+days;
+    for(let i=0;i<(7-total%7)%7;i++) html+=`<div class="cal-cell other-month"></div>`;
+    html+=`</div></div>`;
+  }
+  document.getElementById('cal-container').innerHTML=`<div class="card cal-wrap">${html}</div>`;
+}
+
+// init calendar with current month
+document.getElementById('cal-month-start').value='1';
+document.getElementById('cal-month-end').value='3';
+
+// PEDIDO DE TROCA
+function lookupSv(dateId, personId, infoId){
+  const d=document.getElementById(dateId).value;
+  const p=document.getElementById(personId).value;
+  const info=document.getElementById(infoId);
+  if(!d||!p){info.textContent=''; return;}
+  const v=SCHEDULE[p]?.[d];
+  if(v==='SV'||v==='sv') info.innerHTML=`<span style="color:#2d7a4e;font-weight:600">✓ Serviço confirmado nessa data (09h–09h do dia seguinte)</span>`;
+  else if(v) info.innerHTML=`<span style="color:#D94040">⚠ Nessa data o ${p.charAt(0)+p.slice(1).toLowerCase()} tem: ${v} — não é serviço</span>`;
+  else info.innerHTML=`<span style="color:#888">— Sem registo nessa data</span>`;
+}
+
+function fmtDateDoc(s){
+  // returns "13JUN26" style
+  const d=new Date(s+' 12:00');
+  const ms=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+  return String(d.getDate()).padStart(2,'0')+ms[d.getMonth()]+String(d.getFullYear()).slice(2);
+}
+function nameLabel(sel){
+  const o=sel.options[sel.selectedIndex];
+  return o?o.text:'';
+}
+
+function gerarTroca(){
+  const reqSel=document.getElementById('tr-req');
+  const subSel=document.getElementById('tr-sub');
+  const req=reqSel.value;
+  const sub=subSel.value;
+  const d1=document.getElementById('tr-date1').value;
+  const d2=document.getElementById('tr-date2').value;
+  const reqPosto=document.getElementById('tr-req-posto').value.trim()||'___________';
+  const reqNim=document.getElementById('tr-req-nim').value.trim()||'___________';
+  const subPosto=document.getElementById('tr-sub-posto').value.trim()||'___________';
+  const subNim=document.getElementById('tr-sub-nim').value.trim()||'___________';
+  if(!req||!sub||!d1||!d2){ alert('Preencha todos os campos obrigatórios.'); return; }
+  if(req===sub){ alert('O solicitante e o substituto têm de ser militares diferentes.'); return; }
+
+  const reqNome=nameLabel(reqSel);
+  const subNome=nameLabel(subSel);
+  const d1doc=fmtDateDoc(d1);
+  const d2doc=fmtDateDoc(d2);
+
+  // text block for copy-paste
+  const textoCopiar=`TROCA DE SERVIÇO\n\nSolicita-se ao Chefe do CINGOp a seguinte troca de serviço:\n\nDia: ${d1doc} | Horário: 09H00-09H00\n  Militar de Serviço por Escala: ${reqPosto} ${reqNim} – ${reqNome}\n  Militar que vai efetuar o serviço: ${subPosto} ${subNim} – ${subNome}\n\nDia: ${d2doc} | Horário: 09H00-09H00\n  Militar de Serviço por Escala: ${subPosto} ${subNim} – ${subNome}\n  Militar que vai efetuar o serviço: ${reqPosto} ${reqNim} – ${reqNome}`;
+
+  document.getElementById('pdf-content').innerHTML=`
+    <div style="font-family:'Times New Roman',serif;color:#000;max-width:680px;margin:0 auto;padding:16px">
+
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:1rem;font-weight:bold;letter-spacing:.05em">TROCA DE SERVIÇO</div>
+      </div>
+
+      <p style="font-size:.92rem;margin-bottom:18px">
+        Solicita-se ao Chefe do CINGOp a seguinte <strong>troca de serviço</strong>:
+      </p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:28px">
+        <thead>
+          <tr>
+            <th style="border:1px solid #000;padding:7px 10px;text-align:center;font-style:italic;font-weight:normal;width:14%">Dia</th>
+            <th style="border:1px solid #000;padding:7px 10px;text-align:center;font-style:italic;font-weight:normal;width:18%">Horário</th>
+            <th style="border:1px solid #000;padding:7px 10px;text-align:center;font-style:italic;font-weight:normal;width:34%">Militar de Serviço por Escala</th>
+            <th style="border:1px solid #000;padding:7px 10px;text-align:center;font-style:italic;font-weight:normal;width:34%">Militar que vai efetuar o serviço</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center;font-style:italic">${d1doc}</td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">09H00-09H00</td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">
+              ${reqPosto} ${reqNim}<br>
+              <em>${reqNome}</em>
+            </td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">
+              ${subPosto} ${subNim}<br>
+              <em>${subNome}</em>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center;font-style:italic">${d2doc}</td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">09H00-09H00</td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">
+              ${subPosto} ${subNim}<br>
+              <em>${subNome}</em>
+            </td>
+            <td style="border:1px solid #000;padding:9px 10px;text-align:center">
+              ${reqPosto} ${reqNim}<br>
+              <em>${reqNome}</em>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- texto para copiar -->
+      <div class="no-print" style="background:#f0f4f9;border:1.5px dashed #3D82C4;border-radius:8px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#3D82C4;margin-bottom:8px">Texto para copiar/colar</div>
+        <pre id="copy-text" style="font-family:'Courier New',monospace;font-size:.78rem;white-space:pre-wrap;color:#1A2233;margin:0">${textoCopiar}</pre>
+        <button onclick="copyText()" class="btn btn-outline no-print" style="margin-top:10px;font-family:'Inter',sans-serif;font-size:.76rem">📋 Copiar texto</button>
+      </div>
+
+    </div>`;
+  document.querySelector('.troca-confirm-block').style.display='flex';
+  document.getElementById('pdf-overlay').classList.add('show');
+}
+
+function copyText(){
+  const txt=document.getElementById('copy-text').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('#pdf-content button');
+    btn.textContent='✓ Copiado!'; btn.style.color='#2d7a4e';
+    setTimeout(()=>{btn.textContent='📋 Copiar texto';btn.style.color='';},2000);
+  });
+}
+
+function limparTroca(){
+  ['tr-req','tr-sub'].forEach(id=>document.getElementById(id).value='');
+  ['tr-date1','tr-date2'].forEach(id=>document.getElementById(id).value='');
+  ['tr-req-posto','tr-req-nim','tr-sub-posto','tr-sub-nim'].forEach(id=>document.getElementById(id).value='');
+  ['tr-sv1-info','tr-sv2-info'].forEach(id=>document.getElementById(id).textContent='');
+}
+
+function closePDF(){
+  document.getElementById('pdf-overlay').classList.remove('show');
+  // limpar password mas manter elementos no DOM
+  const pwd = document.getElementById('admin-pwd');
+  if (pwd) pwd.value = '';
+}
+
+// set default dates
+  // restaurar sheet ID guardado
+  if (SHEET_ID) {
+    document.getElementById('sheet-id-input').value = SHEET_ID;
+    loadFromSheets();
+  }
+
+
+// auto-run on load
+loadFromAPI();
+
+async function confirmarTrocaAgora() {
+  // ler directamente dos inputs do formulário que ainda estão no DOM
+  const reqSel = document.getElementById('tr-req');
+  const subSel = document.getElementById('tr-sub');
+  const d1 = document.getElementById('tr-date1').value;
+  const d2 = document.getElementById('tr-date2').value;
+  const req = reqSel ? reqSel.value : '';
+  const sub = subSel ? subSel.value : '';
+  if (!req || !sub || !d1 || !d2) {
+    alert('Gere primeiro o documento de troca.');
+    return;
+  }
+  const ok = await confirmarTrocaAPI(req, sub, d1, d2);
+  if (ok) closePDF();
+}
+
+
+function quemFazServico(dateStr) {
+  // 1) quem tem SV nesse dia (serviço normal)
+  for (const p of PEOPLE) {
+    const v = ((SCHEDULE[p] || {})[dateStr] || '').toUpperCase().trim();
+    if (v === 'SV') return p;
+  }
+  // 2) trocas: o valor é o nome do substituto que efectivamente faz o serviço
+  for (const p of PEOPLE) {
+    const v = ((SCHEDULE[p] || {})[dateStr] || '').toUpperCase().trim();
+    if (v && PEOPLE.includes(v)) {
+      return v; // substituto
+    }
+  }
+  return null;
+}
+
+function updateBanner() {
+  const banner = document.getElementById('banner-servico');
+  if (!banner) return;
+
+  const hoje = new Date();
+  const amanha = new Date(hoje); amanha.setDate(hoje.getDate() + 1);
+  const fmt = d => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+  };
+  const hojeStr = fmt(hoje);
+  const amanhaStr = fmt(amanha);
+  const NOMES = {
+    DUARTE:'Flávio Duarte', REIS:'Elder Reis', FINO:'Rui Fino',
+    MORGADO:'António Morgado', NUNES:'Carlos Nunes', AFONSO:'Miguel Afonso'
+  };
+
+  // quem está de serviço hoje (turno começou ontem às 09h, termina hoje às 09h)
+  // e quem entra hoje (turno começa hoje às 09h, termina amanhã às 09h)
+  let emServico = null, entraHoje = null, entraAmanha = null;
+
+  entraHoje   = quemFazServico(hojeStr);
+  entraAmanha = quemFazServico(amanhaStr);
+
+  // quem estava de serviço ontem = ainda está hoje até às 09h
+  const ontem = new Date(hoje); ontem.setDate(hoje.getDate()-1);
+  const ontemStr = fmt(ontem);
+  emServico = quemFazServico(ontemStr);
+
+  const card = (cor, icone, titulo, nome, sub) => `
+    <div style="background:${cor}18;border-left:4px solid ${cor};border-radius:8px;padding:10px 16px;min-width:200px;flex:1">
+      <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:${cor};margin-bottom:4px">${icone} ${titulo}</div>
+      <div style="font-size:1rem;font-weight:700;color:#1E2D45">${nome || '—'}</div>
+      <div style="font-size:.72rem;color:#6B7A94;margin-top:2px">${sub}</div>
+    </div>`;
+
+  const hojeFormatado = hoje.toLocaleDateString('pt-PT', {weekday:'long', day:'numeric', month:'long'});
+  const amanhaFormatado = amanha.toLocaleDateString('pt-PT', {weekday:'long', day:'numeric', month:'long'});
+
+  // situações activas de hoje
+  // normalizar datas das situações para comparar com hojeStr/amanhaStr
+  const normData = v => {
+    if (!v || v==='undefined') return '';
+    const d = new Date(v);
+    if (!isNaN(d) && d.getFullYear()>1900) {
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    }
+    return String(v).substring(0,10);
+  };
+  const normHora = v => {
+    if (!v || v==='undefined') return '';
+    const d = new Date(v);
+    if (!isNaN(d) && d.getFullYear()>1900) return d.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+    if (String(v).match(/^\d{1,2}:\d{2}/)) return String(v).substring(0,5);
+    return '';
+  };
+
+  const sitHoje = SITUACOES.filter(s =>
+    s.estado === 'Pendente' || s.estado === 'Em Progresso'
+  ).sort((a,b) => {
+    const da = normData(a.data)||'9999'; const db = normData(b.data)||'9999';
+    return da.localeCompare(db);
+  });
+
+  const tipoIcon2 = t => t.includes('Órgão')?'🚑':t==='Evento'?'🎯':t==='Urgente'?'🚨':'📌';
+  const sitCards = sitHoje.map(s => {
+    const nd = normData(s.data);
+    const nh = normHora(s.hora);
+    const cor = s.tipo==='Urgente'?'#C00000':s.tipo.includes('Órgão')?'#E67E22':s.tipo==='Evento'?'#3D82C4':'#8B5CA5';
+    const quando = !nd?'Sem data'+(nh?' às '+nh:''):
+                    nd===hojeStr?'Hoje'+(nh?' às '+nh:''):
+                    nd===amanhaStr?'Amanhã'+(nh?' às '+nh:''):
+                    nd+''+( nh?' às '+nh:'');
+    const quem = s.militar && NOMES[s.militar] ? NOMES[s.militar] : 'Todos';
+    return card(cor, tipoIcon2(s.tipo), s.tipo.toUpperCase(), s.descricao, quando + ' · ' + quem);
+  }).join('');
+
+  // linha de serviço
+  banner.style.display = 'block';
+  const rowServ = document.getElementById('banner-servico-row');
+  if (rowServ) rowServ.innerHTML =
+    card('#E67E22','🔄','A Sair Hoje às 09h00', emServico ? NOMES[emServico] : '—',
+         emServico ? `Entrou ontem · termina hoje às 09h00` : '—') +
+    card('#27AE60','⚡','Entra Hoje às 09h', entraHoje ? NOMES[entraHoje] : '—',
+         hojeFormatado) +
+    card('#3D82C4','🔜','Entra Amanhã às 09h', entraAmanha ? NOMES[entraAmanha] : '—',
+         amanhaFormatado);
+
+  // linha de situações (separada)
+  const rowSit = document.getElementById('banner-sit-row');
+  if (rowSit) {
+    if (sitHoje.length > 0) {
+      rowSit.style.display = 'flex';
+      rowSit.innerHTML = sitCards;
+    } else {
+      rowSit.style.display = 'none';
+      rowSit.innerHTML = '';
+    }
+  }
+}
+
+
+function verResultados(){
+  const s=document.getElementById('start-date').value;
+  const e=document.getElementById('end-date').value;
+  const people=getSelectedPeople();
+  const tf=document.getElementById('filter-type').value;
+  if(!s||!e||!people.length){ alert('Selecione datas e pelo menos um militar.'); return; }
+  const rows=getEntries(s,e,people,tf);
+  const container=document.getElementById('result-container');
+  if(!container) return;
+
+  if(!rows.length){
+    container.style.display='block';
+    container.innerHTML='<div class="card"><p style="text-align:center;color:var(--muted);padding:20px">Nenhum registo encontrado.</p></div>';
+    return;
+  }
+
+  const NOMES_FULL={DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+  const typeIcon={SV:'⚡',F:'🏖️',LP:'👶'};
+  const typeName={SV:'Serviço',F:'Férias',LP:'Lic. Parental'};
+  const typeColor={SV:'var(--green)',F:'var(--purple)',LP:'var(--blue)'};
+
+  // agrupar por data
+  const byDate={};
+  rows.forEach(r=>{
+    if(!byDate[r.date]) byDate[r.date]=[];
+    byDate[r.date].push(r);
+  });
+
+  let html='<div class="card"><h2>Resultados <span style="font-size:.8rem;font-weight:400;color:var(--muted)">('+rows.length+' registos)</span></h2>';
+  html+='<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
+
+  Object.keys(byDate).sort().forEach(ds=>{
+    const d=new Date(ds+' 12:00');
+    const isWknd=d.getDay()===0||d.getDay()===6;
+    const dayStr=d.toLocaleDateString("pt-PT",{weekday:"short",day:"numeric",month:"short"});
+    byDate[ds].forEach(r=>{
+      const isTroca = r.troca;
+      const bg=isTroca?(r.cedeu?'rgba(230,126,34,.08)':'rgba(230,126,34,.15)'):r.type==='SV'?'rgba(76,175,111,.1)':r.type==='F'?'rgba(139,92,165,.1)':'rgba(74,142,194,.1)';
+      const border=isTroca?'#E67E22':r.type==='SV'?'var(--green)':r.type==='F'?'var(--purple)':'var(--blue)';
+      const outroNome=(NOMES_FULL[r.substituto]||r.substituto||'').split(' ')[0];
+      const badgeText=isTroca?(r.cedeu?`↔ Cedeu a ${outroNome}`:`↔ Fez por ${outroNome}`):r.type==='SV'?'⚡ Serviço':r.type==='F'?'🏖️ Férias':'👶 Lic. Parental';
+      const subLabel=isTroca?(r.cedeu?` · cedeu a ${outroNome}`:` · fez por ${outroNome}`):'';
+      html+=`<div style="background:${bg};border-left:4px solid ${border};border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div>
+          <div style="font-weight:700;font-size:.85rem;color:${COLORS[r.person]}">${NOMES_FULL[r.person]||r.person}</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:2px">${dayStr}${isWknd?' · fim de semana':''}${subLabel}
+          </div>
+        </div>
+        <span style="background:${border};color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap">${badgeText}</span>
+      </div>`;
+    });
+  });
+
+  html+='</div></div>';
+  container.style.display='block';
+  container.innerHTML=html;
+  container.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+
+function imprimirColorido() {
+  const content = document.getElementById('pdf-content').innerHTML;
+  const win = window.open('', '_blank', 'width=1100,height=800');
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Escala Operadores de Trânsito 2026</title>
+<style>
+  @page { size: A4 landscape; margin: 8mm; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; box-sizing: border-box; }
+  body { font-family: Calibri, Arial, sans-serif; margin: 0; padding: 10px; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  th, td { border: 1px solid #999; }
+  .no-print { display: none !important; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>${content}</body>
+</html>`);
+  win.document.close();
+  win.onload = function() {
+    setTimeout(function() { win.print(); }, 500);
+  };
+}
+
+
+function renderHistorico() {
+  const el = document.getElementById('historico-list');
+  if (!el) return;
+  const NOMES_FULL={DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+
+  if (!TROCAS || !TROCAS.length) {
+    el.innerHTML='<p style="color:var(--muted);text-align:center;padding:20px">Nenhuma troca registada.</p>';
+    return;
+  }
+
+  let html = '<div style="display:flex;flex-direction:column;gap:10px">';
+  [...TROCAS].reverse().forEach(t => {
+    html += `<div style="background:#FFF8F0;border-left:4px solid #E67E22;border-radius:8px;padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <span style="font-size:.7rem;color:var(--muted)">${t.dataPedido||''}</span>
+        <span style="background:#E67E22;color:#fff;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:12px">${t.estado}</span>
+      </div>
+      <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:#fff;border-radius:6px;padding:8px 10px;border:1px solid #FFD9B0">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#E67E22;font-weight:700;margin-bottom:3px">Cede serviço</div>
+          <div style="font-weight:700;font-size:.85rem">${NOMES_FULL[t.req]||t.req}</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:2px">${t.date1}</div>
+        </div>
+        <div style="background:#fff;border-radius:6px;padding:8px 10px;border:1px solid #FFD9B0">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:#E67E22;font-weight:700;margin-bottom:3px">Substitui + compensa</div>
+          <div style="font-weight:700;font-size:.85rem">${NOMES_FULL[t.sub]||t.sub}</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Serve a ${t.date1} · Compensado a ${t.date2}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+
+let SITUACOES = [];
+let SIT_FILTRO = 'todas';
+const NOMES_SIT = {DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+
+function loadSituacoes() {
+  const cbName = 'cb_sit_' + Date.now();
+  const script = document.createElement('script');
+  window[cbName] = function(data) {
+    delete window[cbName]; document.body.removeChild(script);
+    if (data.status === 'ok') {
+      SITUACOES = data.situacoes || [];
+      renderSituacoes();
+      updateBanner();
+    }
+  };
+  script.onerror = function() { delete window[cbName]; document.body.removeChild(script); };
+  script.src = API_URL + '?action=getSituacoes&callback=' + cbName;
+  document.body.appendChild(script);
+}
+
+function submitSituacao() {
+  const pwd = document.getElementById('sit-pwd').value;
+  if (!pwd) { alert('Introduza a palavra-passe de administrador.'); return; }
+  const tipo = document.getElementById('sit-tipo').value;
+  const descricao = document.getElementById('sit-descricao').value.trim();
+  const data = document.getElementById('sit-data').value;
+  const hora = document.getElementById('sit-hora').value;
+  const militar = document.getElementById('sit-militar').value;
+  const notas = document.getElementById('sit-notas').value.trim();
+  if (!descricao) { alert('Preencha a descrição.'); return; }
+
+  const cbName = 'cb_addsit_' + Date.now();
+  const params = new URLSearchParams({ action:'addSituacao', password:pwd, tipo, descricao, data, hora, militar, notas, callback:cbName });
+  const script = document.createElement('script');
+  window[cbName] = function(d) {
+    delete window[cbName]; document.body.removeChild(script);
+    if (d.status === 'ok') {
+      alert('✓ Situação registada!');
+      document.getElementById('form-situacao').style.display='none';
+      document.getElementById('sit-descricao').value='';
+      document.getElementById('sit-notas').value='';
+      document.getElementById('sit-pwd').value='';
+      loadSituacoes();
+    } else { alert('Erro: ' + (d.error||'desconhecido')); }
+  };
+  script.onerror = function() { delete window[cbName]; document.body.removeChild(script); alert('Erro de ligação.'); };
+  script.src = API_URL + '?' + params.toString();
+  document.body.appendChild(script);
+}
+
+function updateEstadoSit(id, estado) {
+  const pwd = prompt('Palavra-passe de situações:');
+  if (!pwd) return;
+  const cbName = 'cb_updsit_' + Date.now();
+  const params = new URLSearchParams({ action:'updateSituacao', password:pwd, id, estado, callback:cbName });
+  const script = document.createElement('script');
+  window[cbName] = function(d) {
+    delete window[cbName]; document.body.removeChild(script);
+    if (d.status === 'ok') { loadSituacoes(); }
+    else { alert('Erro: ' + (d.error||'desconhecido')); }
+  };
+  script.onerror = function() { delete window[cbName]; document.body.removeChild(script); };
+  script.src = API_URL + '?' + params.toString();
+  document.body.appendChild(script);
+}
+
+function filtrarSit(f) {
+  SIT_FILTRO = f;
+  document.querySelectorAll('#sit-filtros button').forEach(b => { b.style.background=''; b.style.color=''; });
+  const btn = document.getElementById('sf-' + (f==='todas'?'todas':f==='Pendente'?'pendente':f==='Em Progresso'?'progresso':'concluida'));
+  if (btn) { btn.style.background='var(--navy)'; btn.style.color='#fff'; }
+  renderSituacoes();
+}
+
+function renderSituacoes() {
+  const el = document.getElementById('sit-lista');
+  if (!el) return;
+  let sits = [...SITUACOES].reverse();
+  if (SIT_FILTRO !== 'todas') sits = sits.filter(s => s.estado === SIT_FILTRO);
+
+  if (!sits.length) {
+    el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:24px">Nenhuma situação' + (SIT_FILTRO!=='todas'?' neste estado':'') + '.</p>';
+    return;
+  }
+
+  const tipoClass = t => t.includes('Órgão')?'transporte':t==='Evento'?'evento':t==='Urgente'?'urgente':'outro';
+  const tipoIcon = t => t.includes('Órgão')?'🚑':t==='Evento'?'🎯':t==='Urgente'?'🚨':'📌';
+  const estadoClass = e => e==='Pendente'?'sit-pendente':e==='Em Progresso'?'sit-progresso':e==='Concluída'?'sit-concluida':'sit-cancelada';
+  const ESTADOS = ['Pendente','Em Progresso','Concluída','Cancelada'];
+
+  // formatar data e hora vindas do Sheet (podem ser strings ISO ou Date completa)
+  const fmtData = v => {
+    if (!v || v==='undefined') return '';
+    const d = new Date(v);
+    if (!isNaN(d) && d.getFullYear() > 1900) return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+    return String(v).substring(0,10);
+  };
+  const fmtHora = v => {
+    if (!v || v==='undefined') return '';
+    // se vier como Date completa (ex: "Thu Aug 13...")
+    const d = new Date(v);
+    if (!isNaN(d) && d.getFullYear() > 1900) return d.toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+    // se vier como "HH:MM"
+    if (String(v).match(/^\d{1,2}:\d{2}/)) return String(v).substring(0,5);
+    return '';
+  };
+
+  el.innerHTML = sits.map(s => {
+    const dataFmt = fmtData(s.data);
+    const horaFmt = fmtHora(s.hora);
+    return `
+    <div class="sit-card ${tipoClass(s.tipo)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:1.3rem">${tipoIcon(s.tipo)}</span>
+          <div>
+            <div style="font-weight:700;font-size:.95rem">${s.descricao}</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:2px">
+              ${s.tipo}${dataFmt?' · '+dataFmt:''}${horaFmt?' às '+horaFmt:''}${s.militar && NOMES_SIT[s.militar]?' · '+NOMES_SIT[s.militar]:''}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="sit-badge ${estadoClass(s.estado)}">${s.estado}</span>
+          <select onchange="updateEstadoSit('${s.id}',this.value)" style="font-size:.75rem;border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer">
+            ${ESTADOS.map(e=>`<option value="${e}"${e===s.estado?' selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      ${s.notas && s.notas!=='undefined'?`<div style="margin-top:8px;font-size:.78rem;color:var(--muted);background:#f7f9fc;border-radius:6px;padding:6px 10px">📝 ${s.notas}</div>`:''}
+      <div style="margin-top:6px;font-size:.7rem;color:#bbb">Registado em ${fmtData(s.dataRegisto)} · ID: ${s.id}</div>
+    </div>`;
+  }).join('');
+}
+
+</script>
+</body>
+</html>
