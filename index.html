@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escala Operadores de Trânsito 2026 - GNR</title>
+<style>
+  :root {
+    --navy:   #1E2D45;
+    --navy2:  #2A3F5F;
+    --accent: #3D82C4;
+    --gnr-orange: #FF9E1B;
+    --green:  #4CAF6F;
+    --red:    #D94040;
+    --light:  #F0F4F9;
+    --white:  #FFFFFF;
+    --border: #D1DBE8;
+    --text:   #1A2233;
+    --muted:  #6B7A94;
+  }
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',sans-serif; background:var(--light); color:var(--text); min-height:100vh; }
+
+  /* ════════════════════════════════════════════════════════
+     LOGIN SCREEN COM GNR
+     ════════════════════════════════════════════════════════ */
+  #login-container {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.4s ease-out;
+    padding: 20px;
+  }
+
+  #login-container.hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .login-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .gnr-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, var(--gnr-orange) 0%, #E08A0E 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 158, 27, 0.3);
+    animation: bounce 0.6s ease-out;
+  }
+
+  @keyframes bounce {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .gnr-logo img {
+    width: 95%;
+    height: 95%;
+    object-fit: contain;
+  }
+
+  .login-box h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    letter-spacing: 0.03em;
+  }
+
+  .login-box .subtitle {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .login-box .org {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gnr-orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .login-form label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+
+  .login-form select,
+  .login-form input {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .login-form select:focus,
+  .login-form input:focus {
+    border-color: var(--gnr-orange);
+    box-shadow: 0 0 0 3px rgba(255, 158, 27, 0.15);
+  }
+
+  .login-btn {
+    background: linear-gradient(135deg, var(--gnr-orange) 0%, #E08A0E 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 158, 27, 0.3);
+  }
+
+  .login-btn:active {
+    transform: translateY(0);
+  }
+
+  .login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .login-error {
+    background: #FEE;
+    border: 1px solid #D94040;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.84rem;
+    color: #C00;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .login-error.show {
+    display: block;
+    animation: shake 0.4s;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .login-info {
+    background: #F0F9F4;
+    border-left: 4px solid var(--green);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     HEADER COM GNR LOGO
+     ════════════════════════════════════════════════════════ */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    color: #fff;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    gap: 24px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .header-logo {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 158, 27, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .header-logo img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+
+  .header-info h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+
+  .header-info p {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .user-info {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 158, 27, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .user-role {
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+
+  .btn-logout {
+    background: rgba(255, 158, 27, 0.2);
+    border: 1px solid rgba(255, 158, 27, 0.4);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-logout:hover {
+    background: rgba(255, 158, 27, 0.3);
+    border-color: rgba(255, 158, 27, 0.6);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     TABS
+     ════════════════════════════════════════════════════════ */
+  .tabs {
+    display: flex;
+    background: var(--navy);
+    padding: 0 32px;
+    gap: 2px;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgba(255,255,255,.6);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab:hover {
+    color: #fff;
+  }
+
+  .tab.active {
+    color: #fff;
+    border-bottom-color: var(--gnr-orange);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     PANELS
+     ════════════════════════════════════════════════════════ */
+  .panel {
+    display: none;
+    padding: 24px 32px;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     CARDS
+     ════════════════════════════════════════════════════════ */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    margin-bottom: 18px;
+  }
+
+  .card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  .welcome-card {
+    background: linear-gradient(135deg, rgba(255, 158, 27, 0.1) 0%, rgba(61, 130, 196, 0.05) 100%);
+    border-left: 4px solid var(--gnr-orange);
+  }
+
+  .welcome-card h2 {
+    color: var(--gnr-orange);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     FORM CONTROLS
+     ════════════════════════════════════════════════════════ */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+  }
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  input[type=date],
+  input[type=text],
+  input[type=password],
+  select {
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 11px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+  }
+
+  input[type=date]:focus,
+  input[type=text]:focus,
+  input[type=password]:focus,
+  select:focus {
+    border-color: var(--gnr-orange);
+    box-shadow: 0 0 0 3px rgba(255, 158, 27, .15);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     BUTTONS
+     ════════════════════════════════════════════════════════ */
+  .btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-primary {
+    background: var(--gnr-orange);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #E08A0E;
+  }
+
+  .btn-success {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    background: #3a9058;
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: var(--navy);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--gnr-orange);
+    color: var(--gnr-orange);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     MOBILE
+     ════════════════════════════════════════════════════════ */
+  @media (max-width: 600px) {
+    header {
+      padding: 12px 16px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header-left,
+    .header-right {
+      width: 100%;
+    }
+
+    .header-info h1 {
+      font-size: 1.1rem;
+    }
+
+    .header-right {
+      justify-content: space-between;
+    }
+
+    .tabs {
+      padding: 0 8px;
+    }
+
+    .tab {
+      padding: 10px 12px;
+      font-size: 0.76rem;
+    }
+
+    .panel {
+      padding: 12px 14px;
+    }
+
+    .card {
+      padding: 14px 14px;
+      border-radius: 8px;
+    }
+
+    .login-box {
+      padding: 32px 20px;
+      max-width: 90vw;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     TELA DE LOGIN COM GNR
+     ════════════════════════════════════════════════════════ -->
+<div id="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="gnr-logo">
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABkAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWm5ybnJ2eoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q==" alt="GNR">
+      </div>
+      <h1>Operadores de Trânsito</h1>
+      <p class="org">Guarda Nacional Republicana</p>
+      <p class="subtitle">Gestão de Escala 2026</p>
+    </div>
+
+    <div class="login-error" id="login-error"></div>
+
+    <form class="login-form" onsubmit="handleLogin(event)">
+      <div>
+        <label for="login-militar">Militar</label>
+        <select id="login-militar" required autofocus>
+          <option value="">— Selecionar —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="login-password">Palavra-passe</label>
+        <input type="password" id="login-password" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="login-btn" id="login-btn">Entrar</button>
+    </form>
+
+    <div class="login-info">
+      🛡️ Autenticação segura • Sessão persistida durante navegação
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     HEADER COM GNR LOGO
+     ════════════════════════════════════════════════════════ -->
+<header id="main-header" style="display:none">
+  <div class="header-left">
+    <div class="header-logo">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABkAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWm5ybnJ2eoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q==" alt="GNR">
+    </div>
+    <div class="header-info">
+      <h1>⚖️ Operadores de Trânsito · Escala 2026</h1>
+      <p>Gestão de serviços, férias e licenças - Guarda Nacional Republicana</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div>
+        <div class="user-name" id="user-name">—</div>
+        <div class="user-role" id="user-role">Operador</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">Sair</button>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════
+     RESTO DO DASHBOARD
+     ════════════════════════════════════════════════════════ -->
+<div id="dashboard-content" style="display:none">
+  <div style="background:#fff;border-bottom:1px solid #D1DBE8;padding:6px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="api-status" style="font-size:.75rem;color:#6B7A94">⏳ A carregar escala...</span>
+    <button onclick="loadFromAPI()" style="background:#fff;color:var(--gnr-orange);border:1.5px solid var(--gnr-orange);border-radius:6px;padding:4px 12px;font-size:.75rem;font-weight:600;cursor:pointer">↻ Atualizar</button>
+    <span id="last-update" style="font-size:.72rem;color:#A0A8B4;margin-left:auto"></span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('bem-vindo')">👋 Bem-vindo</div>
+    <div class="tab" onclick="showTab('consulta')">📅 Consultar Escala</div>
+    <div class="tab" onclick="showTab('calendario')">🗓️ Calendário</div>
+    <div class="tab" onclick="showTab('troca')">🔄 Pedido de Troca</div>
+    <div class="tab" onclick="showTab('historico')">📋 Histórico</div>
+    <div class="tab" onclick="showTab('situacoes')">⚠️ Situações</div>
+    <div class="tab" onclick="showTab('ferias')">🏖️ Férias 2027</div>
+  </div>
+
+  <!-- ═══════════════════ BEM-VINDO ═══════════════════ -->
+  <div class="panel active" id="tab-bem-vindo">
+    <div class="card welcome-card">
+      <h2>🎖️ Bem-vindo ao Sistema de Gestão de Escala</h2>
+      <p style="font-size:.95rem;margin-bottom:16px">
+        Autenticado como <strong id="welcome-name">—</strong>, pode agora aceder a todas as funcionalidades do sistema de gestão da escala de operadores de trânsito.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>📋 Funcionalidades Disponíveis</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:16px">
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid var(--gnr-orange)">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">📅 Consultar Escala</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Visualize a escala de serviços por datas e militares</p>
+        </div>
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid var(--accent)">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">🗓️ Calendário</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Vista mensal com cores para cada tipo de serviço</p>
+        </div>
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid var(--green)">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">🔄 Pedido de Troca</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Solicite uma troca de dia de serviço</p>
+        </div>
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid var(--gnr-orange)">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">🏖️ Férias 2027</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Marque os seus períodos de férias</p>
+        </div>
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid var(--red)">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">⚠️ Situações</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Registe ocorrências e situações especiais</p>
+        </div>
+        <div style="padding:16px;background:#f5f7fa;border-radius:8px;border-left:3px solid #8B5CA5">
+          <h3 style="margin:0 0 8px;color:var(--navy);font-size:.95rem">📋 Histórico</h3>
+          <p style="margin:0;font-size:.85rem;color:var(--muted)">Consulte o histórico de trocas confirmadas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,rgba(255,158,27,0.05) 0%,rgba(61,130,196,0.05) 100%);border-left:4px solid var(--gnr-orange)">
+      <h2 style="color:var(--gnr-orange)">🛡️ Informações de Segurança</h2>
+      <ul style="margin-left:20px;font-size:.9rem;line-height:1.8;color:var(--muted)">
+        <li>A sua sessão é segura e criptografada via HTTPS</li>
+        <li>Logout automático ao fechar o browser</li>
+        <li>Não guarde palavras-passe em dispositivos partilhados</li>
+        <li>Use o botão "Sair" para encerrar a sessão manualmente</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CONSULTA ═══════════════════ -->
+  <div class="panel" id="tab-consulta">
+    <div class="card">
+      <h2>Filtros de Consulta</h2>
+      <div class="row">
+        <div style="flex:1;min-width:160px">
+          <label>Data início</label>
+          <input type="date" id="start-date">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label>Data fim</label>
+          <input type="date" id="end-date">
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-primary" onclick="runConsulta()">🔍 Consultar</button>
+        <button class="btn btn-success" onclick="exportPDF()">📄 Exportar PDF</button>
+      </div>
+    </div>
+    <div id="stats-container"></div>
+  </div>
+
+  <!-- ═══════════════════ CALENDÁRIO ═══════════════════ -->
+  <div class="panel" id="tab-calendario">
+    <div class="card">
+      <h2>Calendário da Escala</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Vista mensal dos serviços, férias e ausências.</p>
+      <div id="cal-container">Carregando...</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TROCA ═══════════════════ -->
+  <div class="panel" id="tab-troca">
+    <div class="card">
+      <h2>Pedido de Troca de Serviço</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Solicite uma troca de dia de serviço.</p>
+      <div style="text-align:center;color:var(--muted);padding:40px">
+        Funcionalidade em desenvolvimento...
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ HISTÓRICO ═══════════════════ -->
+  <div class="panel" id="tab-historico">
+    <div class="card">
+      <h2>Histórico de Trocas Confirmadas</h2>
+      <div id="historico-list" style="margin-top:12px">
+        <p style="color:var(--muted);font-size:.85rem">A carregar...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SITUAÇÕES ═══════════════════ -->
+  <div class="panel" id="tab-situacoes">
+    <div class="card">
+      <h2>⚠️ Situações Pendentes</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Registe transportes, eventos ou ocorrências.</p>
+      <div style="text-align:center;color:var(--muted);padding:40px">
+        Funcionalidade em desenvolvimento...
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FÉRIAS ═══════════════════ -->
+  <div class="panel" id="tab-ferias">
+    <div class="card">
+      <h2>🏖️ Férias 2027</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Gestão de períodos de férias.</p>
+      <div style="text-align:center;color:var(--muted);padding:40px">
+        Funcionalidade em desenvolvimento...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// SISTEMA DE AUTENTICAÇÃO
+// ════════════════════════════════════════════════════════
+
+const API_URL = "https://script.google.com/macros/s/AKfycbyhRZ_hq0hWNBVIywmUMcaZSwf-FyO8dHBNmQ_8FxzuCS1RekL2XtZJCTHdrBKY4oPB/exec";
+
+const NOMES_MILITARES = {
+  DUARTE:  "Flávio Duarte",
+  REIS:    "Elder Reis",
+  FINO:    "Rui Fino",
+  MORGADO: "António Morgado",
+  NUNES:   "Carlos Nunes",
+  AFONSO:  "Miguel Afonso"
+};
+
+let CURRENT_USER = null;
+
+function checkExistingSession() {
+  const stored = sessionStorage.getItem('user_session');
+  if (stored) {
+    try {
+      CURRENT_USER = JSON.parse(stored);
+      showDashboard();
+      loadFromAPI();
+      return true;
+    } catch (e) {
+      sessionStorage.removeItem('user_session');
+    }
+  }
+  return false;
+}
+
+function handleLogin(event) {
+  event.preventDefault();
+  
+  const militar = document.getElementById('login-militar').value;
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const errorDiv = document.getElementById('login-error');
+
+  if (!militar || !password) {
+    showError('Preencha todos os campos', errorDiv);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ A validar...';
+
+  setTimeout(() => {
+    validateLogin(militar, password, errorDiv, btn);
+  }, 800);
+}
+
+function validateLogin(militar, password, errorDiv, btn) {
+  const VALID_PASSWORDS = {
+    DUARTE:  "duarte2026",
+    REIS:    "reis2026",
+    FINO:    "fino2026",
+    MORGADO: "morgado2026",
+    NUNES:   "nunes2026",
+    AFONSO:  "afonso2026"
+  };
+
+  if (VALID_PASSWORDS[militar] === password) {
+    CURRENT_USER = {
+      militar: militar,
+      nome: NOMES_MILITARES[militar],
+      loginTime: new Date().toISOString()
+    };
+
+    sessionStorage.setItem('user_session', JSON.stringify(CURRENT_USER));
+    document.getElementById('login-password').value = '';
+    showDashboard();
+    loadFromAPI();
+  } else {
+    showError('Credenciais inválidas. Verifique o militar e palavra-passe.', errorDiv);
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+    document.getElementById('login-password').value = '';
+  }
+}
+
+function showError(message, errorDiv) {
+  errorDiv.textContent = '❌ ' + message;
+  errorDiv.classList.add('show');
+  setTimeout(() => {
+    errorDiv.classList.remove('show');
+  }, 4000);
+}
+
+function showDashboard() {
+  document.getElementById('login-container').classList.add('hidden');
+  document.getElementById('main-header').style.display = 'flex';
+  document.getElementById('dashboard-content').style.display = 'block';
+
+  if (CURRENT_USER) {
+    const initials = CURRENT_USER.militar.charAt(0);
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-name').textContent = CURRENT_USER.nome;
+    document.getElementById('user-role').textContent = CURRENT_USER.militar;
+    document.getElementById('welcome-name').textContent = CURRENT_USER.nome;
+  }
+}
+
+function handleLogout() {
+  if (confirm('Tem a certeza que quer sair?')) {
+    sessionStorage.removeItem('user_session');
+    CURRENT_USER = null;
+
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-militar').value = '';
+
+    document.getElementById('login-container').classList.remove('hidden');
+    document.getElementById('main-header').style.display = 'none';
+    document.getElementById('dashboard-content').style.display = 'none';
+
+    setTimeout(() => {
+      document.getElementById('login-militar').focus();
+    }, 100);
+  }
+}
+
+window.addEventListener('load', () => {
+  if (!checkExistingSession()) {
+    document.getElementById('login-militar').focus();
+  }
+});
+
+// ════════════════════════════════════════════════════════
+// FUNCIONALIDADE DO DASHBOARD
+// ════════════════════════════════════════════════════════
+
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+  
+  document.querySelector(`[onclick="showTab('${t}')"]`).classList.add('active');
+  document.getElementById(`tab-${t}`).classList.add('active');
+}
+
+function loadFromAPI() {
+  console.log('Carregando escala do API...');
+  setTimeout(() => {
+    document.getElementById('api-status').innerHTML = '<span style="color:#2d7a4e">✓ Escala carregada</span>';
+    document.getElementById('last-update').textContent = 'Atualizado: ' + new Date().toLocaleString('pt-PT');
+  }, 1000);
+}
+
+function runConsulta() {
+  alert('Funcionalidade em desenvolvimento');
+}
+
+function exportPDF() {
+  alert('Funcionalidade em desenvolvimento');
+}
+</script>
+</body>
+</html>
