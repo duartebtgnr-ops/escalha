@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Escala Trânsito 2026</title>
+<style>
+  :root {
+    --navy:#1E2D45; --green:#27AE60; --orange:#E67E22; --red:#C0392B;
+    --blue:#3D82C4; --purple:#8B5CA5; --bg:#F4F6F9; --card:#fff;
+    --border:#D1DBE8; --muted:#7A8A9A; --radius:14px; --shadow:0 2px 12px rgba(0,0,0,.08);
+    --tab-h:64px; --header-h:56px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:#1A2233; overflow-x:hidden; }
+
+  /* HEADER */
+  .header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--navy); color:#fff; display:flex; align-items:center; padding:0 16px; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .header-title { font-size:.95rem; font-weight:700; flex:1; }
+  .header-badge { background:rgba(255,255,255,.15); border-radius:8px; padding:4px 10px; font-size:.7rem; font-weight:700; }
+  .header-update { font-size:.65rem; color:rgba(255,255,255,.6); margin-top:1px; }
+
+  /* BANNER */
+  .banner { position:fixed; top:var(--header-h); left:0; right:0; z-index:99; background:#fff; border-bottom:1px solid var(--border); }
+  .banner-row { display:flex; overflow-x:auto; scrollbar-width:none; }
+  .banner-row::-webkit-scrollbar { display:none; }
+  .banner-card { flex:0 0 auto; padding:10px 14px; border-right:1px solid var(--border); min-width:140px; }
+  .banner-label { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+  .banner-name { font-size:.95rem; font-weight:700; color:var(--navy); }
+  .banner-sub { font-size:.68rem; color:var(--muted); margin-top:1px; }
+  .banner-sit { background:#FFF8F0; border-top:1px solid #FFE0B2; display:none; }
+  .banner-sit-card { flex:0 0 auto; padding:8px 12px; border-right:1px solid #FFE0B2; min-width:160px; }
+
+  /* MAIN */
+  .main { padding-top:calc(var(--header-h) + 80px); padding-bottom:calc(var(--tab-h) + 8px); min-height:100vh; }
+  .main.with-sit { padding-top:calc(var(--header-h) + 120px); }
+
+  /* TABS */
+  .tabs { position:fixed; bottom:0; left:0; right:0; height:var(--tab-h); background:#fff; border-top:1px solid var(--border); display:flex; z-index:100; box-shadow:0 -2px 8px rgba(0,0,0,.06); }
+  .tab-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; border:none; background:none; cursor:pointer; color:var(--muted); font-size:.58rem; font-weight:600; text-transform:uppercase; letter-spacing:.04em; transition:.15s; }
+  .tab-btn.active { color:var(--navy); }
+  .tab-btn .icon { font-size:1.4rem; }
+  .tab-btn.active .icon { transform:scale(1.1); }
+
+  /* PANEL */
+  .panel { display:none; padding:12px; }
+  .panel.active { display:block; }
+
+  /* CARD */
+  .card { background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .card-title { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:12px; }
+
+  /* MILITARY PILLS */
+  .mil-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .mil-pill { padding:8px 14px; border-radius:50px; font-size:.8rem; font-weight:700; border:2px solid transparent; cursor:pointer; transition:.15s; }
+  .mil-pill.active { border-color:currentColor; }
+  .mil-pill.inactive { opacity:.45; }
+
+  /* FORM */
+  .form-row { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+  .form-group label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block; margin-bottom:4px; }
+  .form-group input, .form-group select { width:100%; border:1.5px solid var(--border); border-radius:10px; padding:12px 14px; font-size:.9rem; background:#fff; -webkit-appearance:none; }
+  .form-group input:focus, .form-group select:focus { outline:none; border-color:var(--navy); }
+
+  /* BUTTONS */
+  .btn { padding:13px 20px; border-radius:12px; font-size:.88rem; font-weight:700; border:none; cursor:pointer; transition:.15s; width:100%; margin-bottom:8px; }
+  .btn-primary { background:var(--navy); color:#fff; }
+  .btn-green { background:var(--green); color:#fff; }
+  .btn-outline { background:#fff; color:var(--navy); border:1.5px solid var(--border); }
+  .btn-small { padding:8px 16px; font-size:.78rem; width:auto; border-radius:8px; margin-bottom:0; }
+  .btn-danger { background:none; color:var(--red); border:1.5px solid var(--red); }
+
+  /* ENTRY CARDS */
+  .entry-card { border-radius:12px; padding:14px 16px; margin-bottom:10px; border-left:4px solid; }
+  .entry-sv { background:rgba(39,174,96,.08); border-color:var(--green); }
+  .entry-f { background:rgba(139,92,165,.08); border-color:var(--purple); }
+  .entry-lp { background:rgba(61,130,196,.08); border-color:var(--blue); }
+  .entry-troca { background:rgba(230,126,34,.08); border-color:var(--orange); }
+  .entry-name { font-size:.95rem; font-weight:700; }
+  .entry-date { font-size:.75rem; color:var(--muted); margin-top:2px; }
+  .entry-badge { display:inline-block; padding:3px 12px; border-radius:50px; font-size:.7rem; font-weight:700; margin-top:6px; }
+  .badge-sv { background:var(--green); color:#fff; }
+  .badge-f { background:var(--purple); color:#fff; }
+  .badge-lp { background:var(--blue); color:#fff; }
+  .badge-troca { background:var(--orange); color:#fff; }
+
+  /* CALENDAR */
+  .cal-month { margin-bottom:16px; }
+  .cal-month-title { background:var(--navy); color:#fff; text-align:center; padding:8px; border-radius:10px 10px 0 0; font-size:.8rem; font-weight:700; letter-spacing:.08em; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; background:var(--border); border:1px solid var(--border); border-radius:0 0 10px 10px; overflow:hidden; }
+  .cal-day-hdr { background:#EEF1F6; text-align:center; font-size:.65rem; font-weight:700; color:var(--muted); padding:5px 0; }
+  .cal-day { background:#fff; min-height:52px; padding:3px; position:relative; cursor:pointer; }
+  .cal-day.weekend { background:#F8F9FB; }
+  .cal-day.feriado { background:#FFF8F0; }
+  .cal-day.other-month { background:#F4F6F9; opacity:.5; }
+  .cal-day-num { font-size:.7rem; font-weight:600; color:var(--muted); margin-bottom:2px; }
+  .cal-dots { display:flex; flex-wrap:wrap; gap:1px; }
+  .cal-dot { width:8px; height:8px; border-radius:2px; }
+
+  /* SITUAÇÕES */
+  .sit-card { border-radius:12px; padding:14px 16px; margin-bottom:10px; border-left:4px solid; background:#fff; box-shadow:var(--shadow); }
+  .sit-badge { display:inline-block; padding:2px 10px; border-radius:50px; font-size:.68rem; font-weight:700; }
+  .sit-pendente { background:#FFF3CD; color:#856404; }
+  .sit-progresso { background:#CCE5FF; color:#004085; }
+  .sit-concluida { background:#D4EDDA; color:#155724; }
+  .sit-cancelada { background:#F8D7DA; color:#721c24; }
+
+  /* FÉRIAS RESUMO */
+  .fer-resumo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
+  .fer-resumo-card { background:#fff; border-radius:12px; padding:12px 10px; box-shadow:var(--shadow); text-align:center; border-top:3px solid; }
+  .fer-resumo-name { font-size:.68rem; font-weight:700; margin-bottom:4px; }
+  .fer-resumo-dias { font-size:1.4rem; font-weight:700; color:var(--navy); }
+  .fer-resumo-sub { font-size:.62rem; color:var(--muted); }
+  .fer-bar { height:4px; border-radius:2px; background:#eee; margin-top:6px; }
+  .fer-bar-fill { height:4px; border-radius:2px; }
+
+  /* OVERLAY */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:flex-end; }
+  .overlay.show { display:flex; }
+  .overlay-box { background:#fff; border-radius:20px 20px 0 0; width:100%; padding:20px 16px 32px; max-height:90vh; overflow-y:auto; }
+  .overlay-handle { width:40px; height:4px; background:#ddd; border-radius:2px; margin:0 auto 16px; }
+  .overlay-title { font-size:1rem; font-weight:700; margin-bottom:16px; }
+
+  /* LOADING */
+  .loading { position:fixed; inset:0; background:rgba(255,255,255,.8); z-index:300; display:none; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+  .loading.show { display:flex; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--navy); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* MISC */
+  .section-sep { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:16px 0 8px; padding:0 4px; }
+  .empty-state { text-align:center; padding:32px 16px; color:var(--muted); font-size:.85rem; }
+  .info-box { border-radius:10px; padding:12px 14px; font-size:.8rem; margin-bottom:12px; }
+  .info-blue { background:#EBF5FB; border-left:3px solid var(--blue); }
+  .info-green { background:#EAFAF1; border-left:3px solid var(--green); }
+  .info-orange { background:#FFF8F0; border-left:3px solid var(--orange); }
+  .info-red { background:#FDF0F0; border-left:3px solid var(--red); }
+
+  /* APROVAÇÃO OVERLAY */
+  #approval-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:flex-end; }
+  #approval-overlay.show { display:flex; }
+  .approval-box { background:#fff; border-radius:20px 20px 0 0; width:100%; padding:24px 20px 40px; }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading" id="loading"><div class="spinner"></div><span style="font-size:.8rem;color:var(--muted)">A carregar...</span></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">⚖️ Operadores de Trânsito</div>
+    <div class="header-update" id="last-update">A actualizar...</div>
+  </div>
+  <div class="header-badge" id="api-status">2026</div>
+</div>
+
+<!-- BANNER -->
+<div class="banner" id="banner-servico">
+  <div class="banner-row" id="banner-servico-row"></div>
+  <div class="banner-sit banner-row" id="banner-sit-row"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="main-content">
+
+  <!-- ══ ESCALA ══ -->
+  <div class="panel active" id="tab-escala">
+    <div class="card">
+      <div class="card-title">Filtrar</div>
+      <div class="form-row">
+        <div class="form-group"><label>Data Início</label><input type="date" id="start-date"></div>
+        <div class="form-group"><label>Data Fim</label><input type="date" id="end-date"></div>
+        <div class="form-group"><label>Tipo</label>
+          <select id="filter-type">
+            <option value="all">Todos</option>
+            <option value="SV">Serviço</option>
+            <option value="F">Férias</option>
+            <option value="LP">Lic. Parental</option>
+          </select>
+        </div>
+      </div>
+      <div class="mil-pills" id="mil-pills"></div>
+      <button class="btn btn-primary" onclick="runConsulta()">🔍 Consultar</button>
+    </div>
+    <div id="stats-container"></div>
+    <div id="results-container"></div>
+  </div>
+
+  <!-- ══ CALENDÁRIO ══ -->
+  <div class="panel" id="tab-calendario">
+    <div class="card" style="padding:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <button onclick="changeMonth(-1)" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px 8px;">‹</button>
+        <div id="cal-month-label" style="font-size:.9rem;font-weight:700;color:var(--navy)"></div>
+        <button onclick="changeMonth(1)" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px 8px;">›</button>
+      </div>
+      <!-- legenda cor militares -->
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:.65rem" id="cal-legend"></div>
+      <div id="cal-grid"></div>
+    </div>
+    <!-- detalhe dia -->
+    <div id="cal-day-detail" style="display:none"></div>
+  </div>
+
+  <!-- ══ TROCAS ══ -->
+  <div class="panel" id="tab-trocas">
+    <button class="btn btn-primary" onclick="openOverlay('overlay-troca')">🔄 Novo Pedido de Troca</button>
+    <div class="section-sep">Histórico</div>
+    <div id="historico-trocas"><div class="empty-state">A carregar...</div></div>
+  </div>
+
+  <!-- ══ SITUAÇÕES ══ -->
+  <div class="panel" id="tab-situacoes">
+    <button class="btn btn-primary" onclick="openOverlay('overlay-situacao')">⚠️ Registar Situação</button>
+    <div style="display:flex;gap:8px;margin:10px 0;overflow-x:auto;scrollbar-width:none;">
+      <button class="btn btn-small btn-outline" onclick="filtrarSit('todas')" id="sf-todas" style="background:var(--navy);color:#fff;flex:0 0 auto">Todas</button>
+      <button class="btn btn-small btn-outline" onclick="filtrarSit('Pendente')" id="sf-pendente" style="flex:0 0 auto">Pendentes</button>
+      <button class="btn btn-small btn-outline" onclick="filtrarSit('Em Progresso')" id="sf-progresso" style="flex:0 0 auto">Em Progresso</button>
+      <button class="btn btn-small btn-outline" onclick="filtrarSit('Concluída')" id="sf-concluida" style="flex:0 0 auto">Concluídas</button>
+    </div>
+    <div id="sit-lista"><div class="empty-state">A carregar...</div></div>
+  </div>
+
+  <!-- ══ FÉRIAS ══ -->
+  <div class="panel" id="tab-ferias">
+    <!-- Login -->
+    <div id="ferias-login" class="card">
+      <div class="card-title">Identificação</div>
+      <div class="form-row">
+        <div class="form-group"><label>Nome</label>
+          <select id="fer-login-mil">
+            <option value="">— Selecionar —</option>
+            <option value="DUARTE">Flávio Duarte</option>
+            <option value="REIS">Elder Reis</option>
+            <option value="FINO">Rui Fino</option>
+            <option value="MORGADO">António Morgado</option>
+            <option value="NUNES">Carlos Nunes</option>
+            <option value="AFONSO">Miguel Afonso</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Palavra-passe</label>
+          <input type="password" id="fer-login-pwd" placeholder="••••••••">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="loginFerias()">Entrar</button>
+    </div>
+    <!-- Área logado -->
+    <div id="ferias-area" style="display:none">
+      <div class="info-box info-blue" style="display:flex;align-items:center;justify-content:space-between">
+        <span id="ferias-user-info" style="font-size:.85rem;font-weight:700"></span>
+        <button onclick="logoutFerias()" class="btn btn-small btn-outline" style="width:auto">Sair</button>
+      </div>
+      <div id="ferias-proximo" style="margin-bottom:12px"></div>
+      <div class="fer-resumo-grid" id="ferias-resumo"></div>
+      <div id="btn-ferias-area" style="margin-bottom:12px;display:none">
+        <button class="btn btn-green" onclick="openOverlay('overlay-ferias')">🏖️ Marcar Férias</button>
+        <button class="btn btn-outline" onclick="exportFeriasPDF()">📄 Exportar PDF</button>
+      </div>
+      <button class="btn btn-outline" id="btn-export-ferias" onclick="exportFeriasPDF()" style="margin-bottom:12px">📄 Exportar PDF</button>
+      <div id="ferias-lista"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('escala')" id="tbtn-escala"><span class="icon">📋</span>Escala</button>
+  <button class="tab-btn" onclick="showTab('calendario')" id="tbtn-calendario"><span class="icon">📅</span>Calendário</button>
+  <button class="tab-btn" onclick="showTab('trocas')" id="tbtn-trocas"><span class="icon">🔄</span>Trocas</button>
+  <button class="tab-btn" onclick="showTab('situacoes')" id="tbtn-situacoes"><span class="icon">⚠️</span>Situações</button>
+  <button class="tab-btn" onclick="showTab('ferias')" id="tbtn-ferias"><span class="icon">🏖️</span>Férias</button>
+</div>
+
+<!-- OVERLAYS -->
+<!-- Troca -->
+<div class="overlay" id="overlay-troca">
+  <div class="overlay-box">
+    <div class="overlay-handle"></div>
+    <div class="overlay-title">🔄 Pedido de Troca</div>
+    <div class="form-row">
+      <div class="form-group"><label>Cede serviço</label>
+        <select id="tr-req" onchange="updateTrocaDoc()">
+          <option value="">— Selecionar —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Data do serviço a ceder</label><input type="date" id="tr-date1" oninput="updateTrocaDoc()"></div>
+      <div class="form-group"><label>Substituto</label>
+        <select id="tr-sub" onchange="updateTrocaDoc()">
+          <option value="">— Selecionar —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Data de compensação</label><input type="date" id="tr-date2" oninput="updateTrocaDoc()"></div>
+    </div>
+    <div id="troca-preview" style="display:none" class="info-box info-blue"></div>
+    <button class="btn btn-green" onclick="submeterPedidoTrocaMobile()">📨 Submeter Pedido</button>
+    <button class="btn btn-outline" onclick="closeOverlay('overlay-troca')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Situação -->
+<div class="overlay" id="overlay-situacao">
+  <div class="overlay-box">
+    <div class="overlay-handle"></div>
+    <div class="overlay-title">⚠️ Nova Situação</div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label>
+        <select id="sit-tipo">
+          <option value="Transporte de Órgãos">🚑 Transporte de Órgãos</option>
+          <option value="Evento">🎯 Evento</option>
+          <option value="Urgente">🚨 Urgente</option>
+          <option value="Outro">📌 Outro</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Descrição</label><input type="text" id="sit-descricao" placeholder="Descreva a situação..."></div>
+      <div class="form-group"><label>Data</label><input type="date" id="sit-data"></div>
+      <div class="form-group"><label>Hora de início</label><input type="time" id="sit-hora"></div>
+      <div class="form-group"><label>Militar</label>
+        <select id="sit-militar">
+          <option value="">— Todos —</option>
+          <option value="DUARTE">Flávio Duarte</option>
+          <option value="REIS">Elder Reis</option>
+          <option value="FINO">Rui Fino</option>
+          <option value="MORGADO">António Morgado</option>
+          <option value="NUNES">Carlos Nunes</option>
+          <option value="AFONSO">Miguel Afonso</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Notas</label><input type="text" id="sit-notas" placeholder="Notas adicionais..."></div>
+      <div class="form-group"><label>Palavra-passe</label><input type="password" id="sit-pwd" placeholder="cingopwaze"></div>
+    </div>
+    <button class="btn btn-green" onclick="submitSituacao()">✓ Registar</button>
+    <button class="btn btn-outline" onclick="closeOverlay('overlay-situacao')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Férias -->
+<div class="overlay" id="overlay-ferias">
+  <div class="overlay-box">
+    <div class="overlay-handle"></div>
+    <div class="overlay-title">🏖️ Marcar Férias</div>
+    <input type="hidden" id="fer-militar">
+    <div class="form-row">
+      <div class="form-group"><label>Data Início</label><input type="date" id="fer-inicio" oninput="calcularDiasUteis()"></div>
+      <div class="form-group"><label>Data Fim</label><input type="date" id="fer-fim" oninput="calcularDiasUteis()"></div>
+    </div>
+    <div id="fer-calculo" style="font-size:.8rem;margin-bottom:12px;min-height:18px"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>Observações</label><input type="text" id="fer-obs" placeholder="Opcional..."></div>
+    <button class="btn btn-green" onclick="submeterFerias()">📨 Submeter Pedido</button>
+    <button class="btn btn-outline" onclick="closeOverlay('overlay-ferias')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Aprovação overlay -->
+<div id="approval-overlay">
+  <div class="approval-box">
+    <div id="approval-icon" style="font-size:3rem;text-align:center;margin-bottom:12px"></div>
+    <div id="approval-title" style="font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:8px"></div>
+    <div id="approval-details" style="background:#f7f9fc;border-radius:10px;padding:14px;margin:14px 0;font-size:.85rem"></div>
+    <div id="approval-btns" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="approval-result" style="display:none;margin-top:12px;padding:12px;border-radius:10px;font-size:.85rem"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════ DADOS GLOBAIS ═══════════════
+const API_URL = "https://script.google.com/macros/s/AKfycbyhRZ_hq0hWNBVIywmUMcaZSwf-FyO8dHBNmQ_8FxzuCS1RekL2XtZJCTHdrBKY4oPB/exec";
+let SCHEDULE = {"DUARTE": {"2026-01-05": "SV", "2026-01-11": "SV", "2026-01-17": "SV", "2026-01-23": "SV", "2026-01-29": "SV", "2026-02-03": "SV", "2026-02-08": "FINO", "2026-02-14": "SV", "2026-02-20": "SV", "2026-02-26": "SV", "2026-03-04": "SV", "2026-03-10": "SV", "2026-03-15": "SV", "2026-03-21": "SV", "2026-03-26": "SV", "2026-04-02": "F", "2026-04-03": "F", "2026-04-04": "F", "2026-04-05": "F", "2026-04-06": "F", "2026-04-07": "F", "2026-04-08": "F", "2026-04-09": "F", "2026-04-10": "F", "2026-04-11": "F", "2026-04-12": "F", "2026-04-13": "SV", "2026-04-18": "SV", "2026-04-23": "T", "2026-04-24": "X", "2026-04-28": "SV", "2026-05-03": "SV", "2026-05-09": "SV", "2026-05-14": "SV", "2026-05-19": "SV", "2026-05-24": "SV", "2026-05-29": "F", "2026-05-30": "F", "2026-05-31": "F", "2026-06-01": "F", "2026-06-02": "F", "2026-06-03": "F", "2026-06-04": "F", "2026-06-05": "F", "2026-06-06": "F", "2026-06-07": "F", "2026-06-08": "SV", "2026-06-13": "SV", "2026-06-18": "SV", "2026-06-23": "SV", "2026-06-28": "SV", "2026-07-02": "SV", "2026-07-06": "SV", "2026-07-10": "SV", "2026-07-14": "SV", "2026-07-17": "F", "2026-07-18": "F", "2026-07-19": "F", "2026-07-20": "F", "2026-07-21": "F", "2026-07-22": "F", "2026-07-23": "F", "2026-07-24": "F", "2026-07-25": "F", "2026-07-26": "F", "2026-07-27": "F", "2026-07-28": "F", "2026-07-29": "F", "2026-07-30": "F", "2026-07-31": "F", "2026-08-01": "F", "2026-08-02": "F", "2026-08-03": "SV", "2026-08-08": "SV", "2026-08-13": "SV", "2026-08-18": "SV", "2026-08-23": "SV", "2026-08-28": "SV", "2026-09-03": "SV", "2026-09-08": "SV", "2026-09-13": "SV", "2026-09-18": "SV", "2026-09-24": "SV", "2026-09-29": "SV", "2026-10-01": "F", "2026-10-02": "F", "2026-10-03": "F", "2026-10-04": "F", "2026-10-05": "F", "2026-10-06": "F", "2026-10-07": "F", "2026-10-08": "SV", "2026-10-14": "SV", "2026-10-19": "SV", "2026-10-24": "SV", "2026-10-29": "SV", "2026-11-04": "SV", "2026-11-10": "SV", "2026-11-16": "SV", "2026-11-22": "SV", "2026-11-27": "SV", "2026-11-30": "SV", "2026-12-04": "SV", "2026-12-08": "SV", "2026-12-12": "SV", "2026-12-17": "SV", "2026-12-28": "SV", "2027-01-01": "SV", "2027-01-07": "SV", "2027-01-13": "SV", "2027-01-19": "SV", "2027-01-25": "SV", "2027-01-31": "SV"}, "REIS": {"2026-01-04": "SV", "2026-01-10": "SV", "2026-01-16": "SV", "2026-01-22": "SV", "2026-01-28": "SV", "2026-01-30": "F", "2026-01-31": "F", "2026-02-01": "F", "2026-02-02": "F", "2026-02-03": "F", "2026-02-04": "F", "2026-02-05": "F", "2026-02-06": "F", "2026-02-07": "F", "2026-02-08": "F", "2026-02-09": "F", "2026-02-10": "F", "2026-02-11": "F", "2026-02-12": "F", "2026-02-13": "SV", "2026-02-19": "SV", "2026-02-25": "SV", "2026-03-03": "SV", "2026-03-09": "SV", "2026-03-14": "SV", "2026-03-20": "SV", "2026-03-25": "SV", "2026-03-31": "SV", "2026-04-05": "SV", "2026-04-07": "X", "2026-04-10": "T", "2026-04-13": "F", "2026-04-14": "F", "2026-04-15": "F", "2026-04-16": "F", "2026-04-17": "F", "2026-04-18": "F", "2026-04-19": "F", "2026-04-20": "SV", "2026-04-25": "SV", "2026-04-30": "SV", "2026-05-05": "SV", "2026-05-10": "SV", "2026-05-15": "SV", "2026-05-20": "T", "2026-05-22": "X", "2026-05-25": "SV", "2026-05-30": "SV", "2026-06-04": "SV", "2026-06-10": "SV", "2026-06-15": "SV", "2026-06-20": "SV", "2026-06-25": "SV", "2026-07-01": "F", "2026-07-02": "F", "2026-07-03": "F", "2026-07-04": "F", "2026-07-05": "F", "2026-07-06": "F", "2026-07-07": "F", "2026-07-08": "F", "2026-07-09": "F", "2026-07-10": "F", "2026-07-11": "F", "2026-07-12": "F", "2026-07-13": "F", "2026-07-14": "F", "2026-07-15": "F", "2026-07-16": "F", "2026-07-17": "SV", "2026-07-21": "SV", "2026-07-25": "SV", "2026-07-29": "SV", "2026-08-02": "SV", "2026-08-07": "SV", "2026-08-12": "SV", "2026-08-16": "SV", "2026-08-21": "SV", "2026-08-26": "SV", "2026-08-31": "SV", "2026-09-05": "SV", "2026-09-10": "SV", "2026-09-15": "SV", "2026-09-20": "SV", "2026-09-25": "SV", "2026-10-01": "SV", "2026-10-06": "SV", "2026-10-12": "SV", "2026-10-17": "SV", "2026-10-22": "SV", "2026-10-27": "SV", "2026-11-01": "SV", "2026-11-07": "SV", "2026-11-13": "SV", "2026-11-19": "SV", "2026-11-25": "SV", "2026-11-29": "SV", "2026-12-03": "SV", "2026-12-07": "SV", "2026-12-11": "SV", "2026-12-16": "SV", "2026-12-21": "SV", "2026-12-24": "SV", "2026-12-27": "SV", "2027-01-06": "SV", "2027-01-12": "SV", "2027-01-18": "SV", "2027-01-24": "SV", "2027-01-30": "SV"}, "FINO": {"2026-01-03": "SV", "2026-01-09": "SV", "2026-01-15": "SV", "2026-01-21": "SV", "2026-01-27": "SV", "2026-02-02": "SV", "2026-02-07": "DUARTE", "2026-02-12": "SV", "2026-02-18": "SV", "2026-02-24": "SV", "2026-03-02": "SV", "2026-03-08": "SV", "2026-03-13": "SV", "2026-03-19": "SV", "2026-03-24": "SV", "2026-03-28": "X", "2026-03-29": "T", "2026-04-03": "SV", "2026-04-07": "T", "2026-04-08": "T", "2026-04-10": "X", "2026-04-14": "SV", "2026-04-19": "SV", "2026-04-23": "X", "2026-04-24": "DT", "2026-04-29": "SV", "2026-05-04": "SV", "2026-05-07": "F", "2026-05-08": "F", "2026-05-09": "F", "2026-05-10": "F", "2026-05-11": "F", "2026-05-12": "F", "2026-05-13": "F", "2026-05-14": "F", "2026-05-15": "F", "2026-05-16": "F", "2026-05-17": "F", "2026-05-18": "F", "2026-05-19": "F", "2026-05-20": "F", "2026-05-21": "F", "2026-05-22": "F", "2026-05-23": "F", "2026-05-24": "F", "2026-05-25": "F", "2026-05-26": "F", "2026-05-27": "F", "2026-05-28": "F", "2026-05-29": "SV", "2026-06-03": "SV", "2026-06-09": "SV", "2026-06-14": "SV", "2026-06-19": "SV", "2026-06-24": "SV", "2026-06-29": "SV", "2026-07-03": "SV", "2026-07-07": "SV", "2026-07-11": "SV", "2026-07-15": "SV", "2026-07-20": "SV", "2026-07-24": "SV", "2026-07-28": "SV", "2026-08-01": "SV", "2026-08-06": "SV", "2026-08-11": "SV", "2026-08-17": "F", "2026-08-18": "F", "2026-08-19": "F", "2026-08-20": "F", "2026-08-21": "F", "2026-08-22": "F", "2026-08-23": "F", "2026-08-24": "F", "2026-08-25": "F", "2026-08-26": "F", "2026-08-27": "F", "2026-08-28": "F", "2026-08-29": "F", "2026-08-30": "F", "2026-08-31": "F", "2026-09-01": "SV", "2026-09-06": "SV", "2026-09-11": "SV", "2026-09-16": "SV", "2026-09-22": "SV", "2026-09-27": "SV", "2026-10-03": "SV", "2026-10-09": "SV", "2026-10-15": "SV", "2026-10-20": "SV", "2026-10-25": "SV", "2026-10-30": "SV", "2026-11-05": "SV", "2026-11-11": "SV", "2026-11-17": "SV", "2026-11-23": "SV", "2026-11-28": "SV", "2026-12-01": "SV", "2026-12-05": "SV", "2026-12-09": "SV", "2026-12-13": "SV", "2026-12-18": "SV", "2026-12-30": "SV", "2027-01-02": "SV", "2027-01-08": "SV", "2027-01-14": "SV", "2027-01-20": "SV", "2027-01-26": "SV"}, "MORGADO": {"2026-01-06": "SV", "2026-01-12": "SV", "2026-01-18": "SV", "2026-01-24": "SV", "2026-01-30": "SV", "2026-02-04": "SV", "2026-02-09": "SV", "2026-02-15": "SV", "2026-02-21": "SV", "2026-02-27": "SV", "2026-03-05": "SV", "2026-03-11": "SV", "2026-03-17": "SV", "2026-03-20": "F", "2026-03-21": "F", "2026-03-22": "F", "2026-03-23": "F", "2026-03-24": "F", "2026-03-25": "F", "2026-03-26": "F", "2026-03-27": "F", "2026-03-28": "F", "2026-03-29": "F", "2026-03-30": "SV", "2026-04-04": "SV", "2026-04-09": "SV", "2026-04-15": "SV", "2026-04-21": "SV", "2026-04-26": "SV", "2026-05-01": "SV", "2026-05-06": "SV", "2026-05-11": "SV", "2026-05-16": "SV", "2026-05-21": "SV", "2026-05-26": "SV", "2026-05-31": "SV", "2026-06-05": "SV", "2026-06-11": "SV", "2026-06-16": "SV", "2026-06-21": "SV", "2026-06-26": "SV", "2026-06-30": "SV", "2026-07-04": "SV", "2026-07-08": "SV", "2026-07-12": "SV", "2026-07-18": "SV", "2026-07-22": "SV", "2026-07-26": "SV", "2026-07-30": "SV", "2026-08-04": "SV", "2026-08-09": "SV", "2026-08-14": "SV", "2026-08-19": "SV", "2026-08-24": "SV", "2026-08-29": "SV", "2026-09-04": "F", "2026-09-05": "F", "2026-09-06": "F", "2026-09-07": "F", "2026-09-08": "F", "2026-09-09": "F", "2026-09-10": "F", "2026-09-11": "F", "2026-09-12": "F", "2026-09-13": "F", "2026-09-14": "F", "2026-09-15": "F", "2026-09-16": "F", "2026-09-17": "F", "2026-09-18": "F", "2026-09-19": "F", "2026-09-20": "F", "2026-09-21": "SV", "2026-09-26": "SV", "2026-10-02": "SV", "2026-10-07": "SV", "2026-10-13": "SV", "2026-10-18": "SV", "2026-10-23": "SV", "2026-10-28": "SV", "2026-11-03": "SV", "2026-11-09": "SV", "2026-11-15": "SV", "2026-11-21": "SV", "2026-11-27": "F", "2026-11-28": "F", "2026-11-29": "F", "2026-11-30": "F", "2026-12-01": "F", "2026-12-02": "F", "2026-12-03": "F", "2026-12-04": "F", "2026-12-05": "F", "2026-12-06": "F", "2026-12-07": "F", "2026-12-08": "F", "2026-12-09": "F", "2026-12-10": "F", "2026-12-11": "F", "2026-12-12": "F", "2026-12-13": "F", "2026-12-14": "SV", "2026-12-19": "SV", "2026-12-22": "SV", "2026-12-25": "SV", "2027-01-04": "SV", "2027-01-10": "SV", "2027-01-16": "SV", "2027-01-22": "SV", "2027-01-28": "SV"}, "NUNES": {"2026-01-02": "SV", "2026-01-08": "SV", "2026-01-14": "SV", "2026-01-20": "SV", "2026-01-26": "SV", "2026-02-01": "AFONSO", "2026-02-06": "SV", "2026-02-11": "SV", "2026-02-17": "SV", "2026-02-23": "SV", "2026-03-01": "SV", "2026-03-07": "SV", "2026-03-09": "F", "2026-03-10": "F", "2026-03-11": "F", "2026-03-12": "F", "2026-03-13": "F", "2026-03-14": "F", "2026-03-15": "F", "2026-03-16": "SV", "2026-03-22": "SV", "2026-03-27": "SV", "2026-04-01": "SV", "2026-04-06": "T", "2026-04-07": "T", "2026-04-08": "X", "2026-04-11": "SV", "2026-04-16": "SV", "2026-04-20": "F", "2026-04-21": "F", "2026-04-22": "F", "2026-04-23": "F", "2026-04-24": "F", "2026-04-25": "F", "2026-04-26": "F", "2026-04-27": "SV", "2026-05-02": "SV", "2026-05-07": "X", "2026-05-08": "DT", "2026-05-13": "SV", "2026-05-18": "SV", "2026-05-23": "SV", "2026-05-28": "SV", "2026-06-02": "SV", "2026-06-07": "SV", "2026-06-12": "SV", "2026-06-17": "SV", "2026-06-22": "SV", "2026-06-27": "SV", "2026-07-02": "LP", "2026-07-03": "LP", "2026-07-04": "LP", "2026-07-05": "LP", "2026-07-06": "LP", "2026-07-07": "LP", "2026-07-08": "LP", "2026-07-09": "LP", "2026-07-10": "LP", "2026-07-11": "LP", "2026-07-12": "LP", "2026-07-13": "LP", "2026-07-14": "LP", "2026-07-15": "LP", "2026-07-16": "SV", "2026-07-20": "LP", "2026-07-21": "LP", "2026-07-22": "LP", "2026-07-23": "LP", "2026-07-24": "LP", "2026-07-25": "LP", "2026-07-26": "LP", "2026-07-27": "LP", "2026-07-28": "LP", "2026-07-29": "LP", "2026-07-30": "LP", "2026-07-31": "LP", "2026-08-01": "LP", "2026-08-02": "LP", "2026-08-03": "LP", "2026-08-04": "LP", "2026-08-05": "LP", "2026-08-06": "LP", "2026-08-07": "LP", "2026-08-08": "LP", "2026-08-09": "LP", "2026-08-10": "F", "2026-08-11": "F", "2026-08-12": "F", "2026-08-13": "F", "2026-08-14": "F", "2026-08-15": "F", "2026-08-16": "F", "2026-08-17": "SV", "2026-08-22": "SV", "2026-08-27": "SV", "2026-09-02": "SV", "2026-09-07": "SV", "2026-09-12": "SV", "2026-09-17": "SV", "2026-09-23": "SV", "2026-09-28": "SV", "2026-10-04": "SV", "2026-10-10": "SV", "2026-10-16": "F", "2026-10-17": "F", "2026-10-18": "F", "2026-10-19": "F", "2026-10-20": "F", "2026-10-21": "F", "2026-10-22": "F", "2026-10-23": "F", "2026-10-24": "F", "2026-10-25": "F", "2026-10-26": "F", "2026-10-27": "F", "2026-10-28": "F", "2026-10-29": "F", "2026-10-30": "F", "2026-10-31": "F", "2026-11-01": "F", "2026-11-02": "SV", "2026-11-08": "SV", "2026-11-14": "SV", "2026-11-20": "SV", "2026-11-26": "SV", "2026-11-29": "LP", "2026-11-30": "LP", "2026-12-01": "LP", "2026-12-02": "LP", "2026-12-03": "LP", "2026-12-04": "LP", "2026-12-05": "LP", "2026-12-06": "LP", "2026-12-07": "LP", "2026-12-08": "LP", "2026-12-09": "LP", "2026-12-10": "LP", "2026-12-11": "LP", "2026-12-12": "LP", "2026-12-13": "LP", "2026-12-14": "LP", "2026-12-15": "LP", "2026-12-16": "LP", "2026-12-17": "LP", "2026-12-18": "LP", "2026-12-19": "LP", "2026-12-20": "LP", "2026-12-21": "LP", "2026-12-22": "LP", "2026-12-23": "LP", "2026-12-24": "LP", "2026-12-25": "LP", "2026-12-26": "LP", "2026-12-27": "LP", "2026-12-28": "LP", "2026-12-29": "SV", "2026-12-31": "SV", "2027-01-03": "SV", "2027-01-09": "SV", "2027-01-15": "SV", "2027-01-21": "SV", "2027-01-27": "SV"}, "AFONSO": {"2026-01-01": "SV", "2026-01-07": "SV", "2026-01-13": "SV", "2026-01-19": "SV", "2026-01-25": "SV", "2026-01-31": "NUNES", "2026-02-05": "SV", "2026-02-10": "SV", "2026-02-16": "SV", "2026-02-22": "SV", "2026-02-28": "SV", "2026-03-06": "SV", "2026-03-12": "SV", "2026-03-18": "SV", "2026-03-23": "SV", "2026-03-28": "T", "2026-03-29": "X", "2026-04-02": "SV", "2026-04-06": "X", "2026-04-07": "T", "2026-04-12": "SV", "2026-04-17": "SV", "2026-04-22": "SV", "2026-04-28": "LM", "2026-04-29": "F", "2026-04-30": "F", "2026-05-01": "F", "2026-05-02": "F", "2026-05-03": "F", "2026-05-04": "F", "2026-05-05": "F", "2026-05-06": "F", "2026-05-07": "T", "2026-05-08": "X", "2026-05-12": "SV", "2026-05-17": "SV", "2026-05-20": "X", "2026-05-22": "DT", "2026-05-27": "SV", "2026-06-01": "SV", "2026-06-06": "SV", "2026-06-09": "F", "2026-06-10": "F", "2026-06-11": "F", "2026-06-12": "F", "2026-06-13": "F", "2026-06-14": "F", "2026-06-15": "F", "2026-06-16": "F", "2026-06-17": "F", "2026-06-18": "F", "2026-06-19": "F", "2026-06-20": "F", "2026-06-21": "F", "2026-06-22": "F", "2026-06-23": "F", "2026-06-24": "F", "2026-06-25": "F", "2026-06-26": "F", "2026-06-27": "F", "2026-06-28": "F", "2026-06-29": "F", "2026-06-30": "F", "2026-07-01": "SV", "2026-07-05": "SV", "2026-07-09": "SV", "2026-07-13": "SV", "2026-07-19": "SV", "2026-07-23": "SV", "2026-07-27": "SV", "2026-07-31": "SV", "2026-08-05": "SV", "2026-08-10": "SV", "2026-08-15": "SV", "2026-08-20": "SV", "2026-08-25": "SV", "2026-08-30": "SV", "2026-09-04": "SV", "2026-09-09": "SV", "2026-09-14": "SV", "2026-09-19": "SV", "2026-09-22": "F", "2026-09-23": "F", "2026-09-24": "F", "2026-09-25": "F", "2026-09-26": "F", "2026-09-27": "F", "2026-09-28": "F", "2026-09-29": "F", "2026-09-30": "SV", "2026-10-05": "SV", "2026-10-11": "SV", "2026-10-16": "SV", "2026-10-21": "SV", "2026-10-26": "SV", "2026-10-31": "SV", "2026-11-06": "SV", "2026-11-12": "SV", "2026-11-18": "SV", "2026-11-24": "SV", "2026-12-02": "SV", "2026-12-06": "SV", "2026-12-10": "SV", "2026-12-15": "SV", "2026-12-20": "SV", "2026-12-23": "SV", "2026-12-26": "SV", "2027-01-05": "SV", "2027-01-11": "SV", "2027-01-17": "SV", "2027-01-23": "SV", "2027-01-29": "SV"}};
+const FERIAS_HIST_2025 = {"DUARTE": ["2025-06-18", "2025-06-19", "2025-06-20", "2025-06-21", "2025-06-22", "2025-06-23", "2025-06-24", "2025-06-25", "2025-06-26", "2025-06-27", "2025-06-28", "2025-08-19", "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23", "2025-08-24", "2025-08-25", "2025-08-26", "2025-08-27", "2025-08-28", "2025-08-29", "2025-08-30", "2025-08-31", "2025-09-01", "2025-11-01", "2025-11-02", "2025-11-03", "2025-11-04", "2025-11-05", "2025-11-06", "2025-11-07", "2025-11-08", "2025-11-09"], "REIS": ["2025-05-29", "2025-05-30", "2025-05-31", "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04", "2025-06-05", "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15", "2025-06-16", "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04", "2025-07-05", "2025-07-06", "2025-07-07", "2025-07-08", "2025-07-09", "2025-07-10", "2025-07-11", "2025-07-12", "2025-07-13", "2025-07-14", "2025-09-22", "2025-09-23", "2025-09-24", "2025-09-25", "2025-09-26", "2025-09-27", "2025-09-28", "2025-09-29", "2025-09-30", "2025-10-01", "2025-10-02", "2025-10-03", "2025-10-04", "2025-10-05"], "FINO": ["2025-05-01", "2025-05-02", "2025-05-03", "2025-05-04", "2025-05-05", "2025-05-06", "2025-05-07", "2025-05-08", "2025-05-09", "2025-05-10", "2025-05-11", "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-17", "2025-05-18", "2025-05-19", "2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", "2025-05-24", "2025-05-25", "2025-05-26", "2025-05-27", "2025-05-28"], "MORGADO": ["2025-04-14", "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-18", "2025-04-19", "2025-04-20", "2025-04-21", "2025-04-22", "2025-04-23", "2025-04-24", "2025-04-25", "2025-04-26", "2025-04-27", "2025-04-28", "2025-04-29", "2025-04-30", "2025-07-18", "2025-07-19", "2025-07-20", "2025-07-21", "2025-07-22", "2025-07-23", "2025-07-24", "2025-07-25", "2025-07-26", "2025-07-27", "2025-07-28", "2025-07-29", "2025-07-30", "2025-07-31"], "NUNES": ["2025-08-01", "2025-08-02", "2025-08-03", "2025-08-04", "2025-08-05", "2025-08-06", "2025-08-07", "2025-08-08", "2025-08-09", "2025-08-10", "2025-08-11", "2025-08-12", "2025-08-13", "2025-08-14", "2025-08-15", "2025-08-16", "2025-08-17", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09"], "AFONSO": ["2025-04-01", "2025-04-02", "2025-04-03", "2025-04-04", "2025-04-05", "2025-04-06", "2025-09-02", "2025-09-03", "2025-09-04", "2025-09-05", "2025-09-06", "2025-09-07", "2025-09-08", "2025-09-09", "2025-09-10", "2025-09-11", "2025-09-12", "2025-09-13", "2025-09-14", "2025-09-15", "2025-09-16", "2025-09-17", "2025-09-18", "2025-09-19", "2025-09-20", "2025-09-21"]};
+const FERIAS_PWD_LOCAL = {
+  DUARTE:'duarte2026', REIS:'reis2026', FINO:'fino2026',
+  MORGADO:'morgado2026', NUNES:'nunes2026', AFONSO:'afonso2026'
+};
+
+const PEOPLE = ['DUARTE','REIS','FINO','MORGADO','NUNES','AFONSO'];
+const NOMES = {DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+const POSTOS = {DUARTE:'Cabo',REIS:'Cabo',FINO:'Gprinc',MORGADO:'GPrinc',NUNES:'GPrinc',AFONSO:'GPrinc'};
+const COLORS = {DUARTE:'#1E4D8C',REIS:'#C0392B',FINO:'#27AE60',MORGADO:'#8E44AD',NUNES:'#D35400',AFONSO:'#2980B9'};
+const FERIADOS_2027 = new Set(['2027-01-01','2027-04-16','2027-04-25','2027-05-01','2027-06-03','2027-06-10','2027-06-13','2027-08-15','2027-10-05','2027-11-01','2027-12-01','2027-12-08','2027-12-25']);
+const ORDEM_ANTIG = ['DUARTE','REIS','FINO','MORGADO','NUNES','AFONSO'];
+const FERIAS_DIAS_TOT = {DUARTE:27,REIS:27,FINO:27,MORGADO:26,NUNES:26,AFONSO:26};
+
+let TROCAS = [], SITUACOES = [], FERIAS_DATA = [], FERIAS_RESUMO = {}, FERIAS_PROXIMO = null;
+let FERIAS_USER = null;
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+
+// ═══════════════ UI HELPERS ═══════════════
+function showLoading(v) { document.getElementById('loading').classList.toggle('show', v); }
+function openOverlay(id) { document.getElementById(id).classList.add('show'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
+function showTab(t) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('tbtn-'+t).classList.add('active');
+  if(t==='calendario') buildCalendar();
+  if(t==='trocas') renderHistorico();
+  if(t==='situacoes') loadSituacoes();
+  if(t==='ferias') loadFerias();
+}
+
+// ═══════════════ API ═══════════════
+function loadFromAPI() {
+  showLoading(true);
+  return new Promise((res,rej) => {
+    const cbName = 'cb_'+Date.now();
+    const script = document.createElement('script');
+    window[cbName] = function(data) {
+      delete window[cbName]; document.body.removeChild(script);
+      showLoading(false);
+      if(data.status==='ok' && data.schedule) {
+        SCHEDULE = data.schedule;
+        if(data.trocas) TROCAS = data.trocas;
+        document.getElementById('api-status').textContent = '✓ Online';
+        document.getElementById('api-status').style.background = 'rgba(39,174,96,.3)';
+        document.getElementById('last-update').textContent = 'Actualizado: '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+        updateBanner();
+        renderHistorico();
+        checkApprovalUrl();
+        checkFeriasUrl();
+        res();
+      } else { showLoading(false); updateBanner(); res(); }
+    };
+    script.onerror = function() { delete window[cbName]; document.body.removeChild(script); showLoading(false); updateBanner(); res(); };
+    script.src = API_URL + '?action=get&callback='+cbName;
+    document.body.appendChild(script);
+  });
+}
+
+// ═══════════════ BANNER ═══════════════
+function quemFazServico(dateStr) {
+  for(const p of PEOPLE) { const v=((SCHEDULE[p]||{})[dateStr]||'').toUpperCase().trim(); if(v==='SV') return p; }
+  for(const p of PEOPLE) { const v=((SCHEDULE[p]||{})[dateStr]||'').toUpperCase().trim(); if(v&&PEOPLE.includes(v)) return v; }
+  return null;
+}
+function updateBanner() {
+  const hoje = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const hojeStr = fmt(hoje);
+  const amanha = new Date(hoje); amanha.setDate(amanha.getDate()+1);
+  const amanhaStr = fmt(amanha);
+  const ontem = new Date(hoje); ontem.setDate(ontem.getDate()-1);
+  const ontemStr = fmt(ontem);
+
+  const fmtDate = s => new Date(s+'T12:00:00').toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+  const card = (cor, icon, label, nome, sub) => `<div class="banner-card"><div class="banner-label" style="color:${cor}">${icon} ${label}</div><div class="banner-name">${nome}</div><div class="banner-sub">${sub}</div></div>`;
+
+  const emServico = quemFazServico(ontemStr);
+  const entraHoje = quemFazServico(hojeStr);
+  const entraAmanha = quemFazServico(amanhaStr);
+
+  const normData = v => { if(!v||v==='undefined') return ''; const d=new Date(v); if(!isNaN(d)&&d.getFullYear()>1900) return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); return String(v).substring(0,10); };
+  const normHora = v => { if(!v||v==='undefined') return ''; if(String(v).match(/^\d{1,2}:\d{2}/)) return String(v).substring(0,5); return ''; };
+
+  const sitHoje = SITUACOES.filter(s => {
+    if(s.estado!=='Pendente'&&s.estado!=='Em Progresso') return false;
+    const nd=normData(s.data); if(!nd) return true;
+    const sitDate=new Date(nd+'T12:00:00'); const diffDays=(sitDate-hoje)/(1000*60*60*24);
+    return diffDays>=-2&&diffDays<=3;
+  }).sort((a,b)=>(normData(a.data)||'9999').localeCompare(normData(b.data)||'9999'));
+
+  const rowServ = document.getElementById('banner-servico-row');
+  const rowSit = document.getElementById('banner-sit-row');
+  const banner = document.getElementById('banner-servico');
+
+  rowServ.innerHTML = card('#E67E22','🔄','Sai às 09h',emServico?NOMES[emServico]:'—','Termina hoje') +
+    card('#27AE60','⚡','Entra hoje',entraHoje?NOMES[entraHoje]:'—',fmtDate(hojeStr)) +
+    card('#3D82C4','🔜','Entra amanhã',entraAmanha?NOMES[entraAmanha]:'—',fmtDate(amanhaStr));
+
+  if(sitHoje.length) {
+    const tipoIcon = t => t.includes('Órgão')?'🚑':t==='Evento'?'🎯':t==='Urgente'?'🚨':'📌';
+    rowSit.innerHTML = sitHoje.map(s => {
+      const nh=normHora(s.hora); const nd=normData(s.data);
+      const quando=nd===hojeStr?'Hoje'+(nh?' às '+nh:''):nd===amanhaStr?'Amanhã'+(nh?' às '+nh:''):'Pendente';
+      return `<div class="banner-sit-card"><div style="font-size:.6rem;font-weight:700;color:#E67E22">${tipoIcon(s.tipo)} ${s.tipo.toUpperCase()}</div><div style="font-size:.82rem;font-weight:700">${s.descricao}</div><div style="font-size:.65rem;color:var(--muted)">${quando}</div></div>`;
+    }).join('');
+    rowSit.parentElement.style.display='block';
+    document.getElementById('main-content').className='main with-sit';
+  } else {
+    rowSit.innerHTML=''; rowSit.parentElement.style.display='none';
+    document.getElementById('main-content').className='main';
+  }
+}
+
+// ═══════════════ MILITARES PILLS ═══════════════
+let selectedPeople = [...PEOPLE];
+function initPills() {
+  const el = document.getElementById('mil-pills');
+  el.innerHTML = PEOPLE.map(p => `<button class="mil-pill active" style="color:${COLORS[p]};background:${COLORS[p]}18;border-color:${COLORS[p]}" onclick="togglePill('${p}')" id="pill-${p}">${p.charAt(0)+p.slice(1).toLowerCase()}</button>`).join('');
+}
+function togglePill(p) {
+  if(selectedPeople.includes(p)&&selectedPeople.length>1) selectedPeople=selectedPeople.filter(x=>x!==p);
+  else if(!selectedPeople.includes(p)) selectedPeople.push(p);
+  PEOPLE.forEach(pp=>{
+    const el=document.getElementById('pill-'+pp);
+    el.classList.toggle('active',selectedPeople.includes(pp));
+    el.classList.toggle('inactive',!selectedPeople.includes(pp));
+  });
+}
+
+// ═══════════════ CONSULTA ═══════════════
+function runConsulta(silencioso=false) {
+  const s=document.getElementById('start-date').value;
+  const e=document.getElementById('end-date').value;
+  if(!s||!e||!selectedPeople.length) { if(!silencioso) alert('Preencha as datas.'); return; }
+  const rows=getEntries(s,e,selectedPeople,'all');
+  const counts={SV:{},F:{},LP:{}};
+  PEOPLE.forEach(p=>{counts.SV[p]=0;counts.F[p]=0;counts.LP[p]=0;});
+  rows.forEach(r=>{ if(!r.troca&&counts[r.type]) counts[r.type][r.person]++; else if(r.troca&&!r.cedeu) counts.SV[r.person]++; });
+
+  const sc=document.getElementById('stats-container');
+  sc.innerHTML=`<div class="card"><div class="card-title">Totais no Período</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${
+    selectedPeople.map(p=>`<div style="text-align:center;padding:8px;background:${COLORS[p]}12;border-radius:10px;border-top:3px solid ${COLORS[p]}">
+      <div style="font-size:1.6rem;font-weight:700;color:${COLORS[p]}">${counts.SV[p]}</div>
+      <div style="font-size:.65rem;font-weight:700;color:${COLORS[p]}">${p.charAt(0)+p.slice(1).toLowerCase()}</div>
+      <div style="font-size:.6rem;color:var(--muted)">serviços</div>
+    </div>`).join('')
+  }</div></div>`;
+
+  const rc=document.getElementById('results-container');
+  if(!rows.length) { rc.innerHTML='<div class="empty-state">Sem resultados.</div>'; return; }
+  rc.innerHTML = rows.map(r=>{
+    const isTroca=r.troca;
+    const cls=isTroca?'entry-troca':r.type==='SV'?'entry-sv':r.type==='F'?'entry-f':'entry-lp';
+    const badge=isTroca?(r.cedeu?`↔ Cedeu a ${(NOMES[r.substituto]||r.substituto||'').split(' ')[0]}`:`↔ Fez por ${(NOMES[r.substituto]||r.substituto||'').split(' ')[0]}`):r.type==='SV'?'⚡ Serviço':r.type==='F'?'🏖️ Férias':'👶 LP';
+    const badgeCls=isTroca?'badge-troca':r.type==='SV'?'badge-sv':r.type==='F'?'badge-f':'badge-lp';
+    const d=new Date(r.date+'T12:00:00'); const isWk=d.getDay()===0||d.getDay()===6;
+    const dayStr=d.toLocaleDateString('pt-PT',{weekday:'short',day:'numeric',month:'short'});
+    return `<div class="entry-card ${cls}">
+      <div class="entry-name" style="color:${COLORS[r.person]}">${NOMES[r.person]}</div>
+      <div class="entry-date">${dayStr}${isWk?' · fim de semana':''}</div>
+      <span class="entry-badge ${badgeCls}">${badge}</span>
+    </div>`;
+  }).join('');
+}
+
+function getEntries(startStr,endStr,people,typeFilter) {
+  const rows=[]; const seen=new Set();
+  let d=new Date(startStr+'T12:00:00'); const end=new Date(endStr+'T12:00:00');
+  while(d<=end) {
+    const ds=d.toISOString().split('T')[0];
+    for(const p of people) {
+      const val=(SCHEDULE[p]||{})[ds];
+      if(!val) { d.setDate(d.getDate()+1); continue; }
+      const v=String(val).trim().toUpperCase();
+      const isTroca=PEOPLE.includes(v);
+      const actualType=isTroca?'SV':v;
+      if(typeFilter!=='all'&&actualType!==typeFilter) continue;
+      const key=ds+p;
+      if(seen.has(key)) continue; seen.add(key);
+      if(isTroca) {
+        rows.push({date:ds,person:p,val,type:'SV',troca:true,cedeu:true,substituto:v});
+        const subKey=ds+v;
+        if(people.includes(v)&&!seen.has(subKey)) {
+          seen.add(subKey);
+          rows.push({date:ds,person:v,val,type:'SV',troca:true,cedeu:false,substituto:p});
+        }
+      } else {
+        rows.push({date:ds,person:p,val,type:actualType,troca:false,substituto:null});
+      }
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return rows;
+}
+
+// ═══════════════ CALENDÁRIO ═══════════════
+function changeMonth(dir) { calMonth+=dir; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} buildCalendar(); }
+function buildCalendar() {
+  const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DIAS=['D','S','T','Q','Q','S','S'];
+  document.getElementById('cal-month-label').textContent=MESES[calMonth]+' '+calYear;
+
+  // legenda
+  const leg=document.getElementById('cal-legend');
+  leg.innerHTML=PEOPLE.map(p=>`<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:${COLORS[p]};display:inline-block"></span><span>${p.charAt(0)+p.slice(1,4).toLowerCase()}</span></span>`).join('');
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+
+  let html='<div class="cal-grid">';
+  DIAS.forEach(d=>{ html+=`<div class="cal-day-hdr">${d}</div>`; });
+  for(let i=0;i<firstDay;i++) html+='<div class="cal-day other-month"></div>';
+
+  for(let d=1;d<=daysInMonth;d++) {
+    const dt=new Date(calYear,calMonth,d);
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isWk=dt.getDay()===0||dt.getDay()===6;
+    const isFer=FERIADOS_2027.has(ds);
+    const cls=isFer?'cal-day feriado':isWk?'cal-day weekend':'cal-day';
+    const dots=PEOPLE.filter(p=>((SCHEDULE[p]||{})[ds]||'').trim().toUpperCase()).map(p=>{
+      const v=((SCHEDULE[p]||{})[ds]||'').trim().toUpperCase();
+      const c=v==='F'?COLORS[p]:v==='LP'?COLORS[p]:v==='SV'||PEOPLE.includes(v)?COLORS[p]:'';
+      const opacity=v==='F'?'.4':v==='LP'?'.6':'1';
+      return c?`<div class="cal-dot" style="background:${c};opacity:${opacity}"></div>`:'';
+    }).join('');
+    html+=`<div class="${cls}" onclick="showDayDetail('${ds}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dots}</div></div>`;
+  }
+  html+='</div>';
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
+function showDayDetail(ds) {
+  const el=document.getElementById('cal-day-detail');
+  const d=new Date(ds+'T12:00:00');
+  const dayStr=d.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const entries=PEOPLE.map(p=>{
+    const v=((SCHEDULE[p]||{})[ds]||'').trim().toUpperCase();
+    if(!v) return '';
+    const isTroca=PEOPLE.includes(v);
+    const label=v==='SV'||isTroca?'⚡ Serviço':v==='F'?'🏖️ Férias':v==='LP'?'👶 LP':v;
+    const bg=v==='F'?'#f0e6ff':v==='LP'?'#e6f0ff':isTroca?'#fff3e6':'#e6f9ef';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bg};border-radius:10px;margin-bottom:6px">
+      <span style="font-weight:700;color:${COLORS[p]}">${NOMES[p]}</span>
+      <span style="font-size:.78rem;color:#555">${label}${isTroca?' ('+NOMES[v]+')':''}</span>
+    </div>`;
+  }).join('');
+  el.style.display='block';
+  el.innerHTML=`<div class="card"><div style="font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:10px">${dayStr}</div>${entries||'<div class="empty-state" style="padding:12px">Sem registos neste dia.</div>'}</div>`;
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ═══════════════ TROCAS ═══════════════
+function renderHistorico() {
+  const el=document.getElementById('historico-trocas');
+  if(!TROCAS||!TROCAS.length) { el.innerHTML='<div class="empty-state">Nenhuma troca registada.</div>'; return; }
+  const fmtD=s=>{ if(!s||s==='undefined') return '—'; const d=new Date(s); if(!isNaN(d)) return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'}); return s; };
+  el.innerHTML=[...TROCAS].reverse().map(t=>`
+    <div class="sit-card" style="border-color:#E67E22">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:.7rem;color:var(--muted)">${fmtD(t.dataPedido)}</span>
+        <span class="sit-badge sit-concluida">${t.estado}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:#f7f7f7;border-radius:8px;padding:8px">
+          <div style="font-size:.65rem;color:#E67E22;font-weight:700;margin-bottom:3px">CEDE</div>
+          <div style="font-weight:700;font-size:.82rem">${NOMES[t.req]||t.req}</div>
+          <div style="font-size:.7rem;color:var(--muted)">${fmtD(t.date1)}</div>
+        </div>
+        <div style="background:#f7f7f7;border-radius:8px;padding:8px">
+          <div style="font-size:.65rem;color:#E67E22;font-weight:700;margin-bottom:3px">SUBSTITUI</div>
+          <div style="font-weight:700;font-size:.82rem">${NOMES[t.sub]||t.sub}</div>
+          <div style="font-size:.7rem;color:var(--muted)">Serve ${fmtD(t.date1)} · Comp. ${fmtD(t.date2)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function updateTrocaDoc() {
+  const req=document.getElementById('tr-req').value;
+  const sub=document.getElementById('tr-sub').value;
+  const d1=document.getElementById('tr-date1').value;
+  const d2=document.getElementById('tr-date2').value;
+  const el=document.getElementById('troca-preview');
+  if(req&&sub&&d1&&d2) {
+    const fmtD=s=>s.split('-').reverse().join('/');
+    el.style.display='block';
+    el.innerHTML=`<b>${NOMES[req]||req}</b> cede serviço de <b>${fmtD(d1)}</b><br><b>${NOMES[sub]||sub}</b> substitui e compensa a <b>${fmtD(d2)}</b>`;
+  } else { el.style.display='none'; }
+}
+
+function submeterPedidoTrocaMobile() {
+  const req=document.getElementById('tr-req').value;
+  const sub=document.getElementById('tr-sub').value;
+  const d1=document.getElementById('tr-date1').value;
+  const d2=document.getElementById('tr-date2').value;
+  if(!req||!sub||!d1||!d2) { alert('Preencha todos os campos.'); return; }
+  if(req===sub) { alert('O cedente e o substituto têm de ser diferentes.'); return; }
+  if(!confirm('Submeter pedido de troca para aprovação?')) return;
+  showLoading(true);
+  const cbName='cb_tr_'+Date.now();
+  const reqNome=NOMES[req]||req; const subNome=NOMES[sub]||sub;
+  const reqPosto=POSTOS[req]||''; const subPosto=POSTOS[sub]||'';
+  const params=new URLSearchParams({action:'pedidoTroca',req,sub,date1:d1,date2:d2,reqNome,subNome,reqPosto,subPosto,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script); showLoading(false);
+    if(d.status==='ok') { alert('✅ Pedido submetido! ID: '+d.id); closeOverlay('overlay-troca'); loadFromAPI(); }
+    else { alert('Erro: '+(d.error||'desconhecido')); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); showLoading(false); alert('Erro de ligação.'); };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+
+// ═══════════════ SITUAÇÕES ═══════════════
+let SIT_FILTRO='todas';
+function loadSituacoes() {
+  const cbName='cb_sit_'+Date.now();
+  const script=document.createElement('script');
+  window[cbName]=function(data){ delete window[cbName]; document.body.removeChild(script);
+    if(data.status==='ok') { SITUACOES=data.situacoes||[]; renderSituacoes(); updateBanner(); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); };
+  script.src=API_URL+'?action=getSituacoes&callback='+cbName;
+  document.body.appendChild(script);
+}
+
+function filtrarSit(f) {
+  SIT_FILTRO=f;
+  document.querySelectorAll('[id^="sf-"]').forEach(b=>{ b.style.background=''; b.style.color=''; });
+  const id='sf-'+(f==='todas'?'todas':f==='Pendente'?'pendente':f==='Em Progresso'?'progresso':'concluida');
+  const btn=document.getElementById(id);
+  if(btn) { btn.style.background='var(--navy)'; btn.style.color='#fff'; }
+  renderSituacoes();
+}
+
+function renderSituacoes() {
+  const el=document.getElementById('sit-lista');
+  const fmtData=v=>{ if(!v||v==='undefined') return ''; const d=new Date(v); if(!isNaN(d)&&d.getFullYear()>1900) return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'}); return String(v).substring(0,10).split('-').reverse().join('/'); };
+  const fmtHora=v=>{ if(!v||v==='undefined') return ''; if(String(v).match(/^\d{1,2}:\d{2}/)) return String(v).substring(0,5); return ''; };
+  let sits=[...SITUACOES].reverse();
+  if(SIT_FILTRO!=='todas') sits=sits.filter(s=>s.estado===SIT_FILTRO);
+  if(!sits.length) { el.innerHTML='<div class="empty-state">Sem situações.</div>'; return; }
+  const tipoIcon=t=>t.includes('Órgão')?'🚑':t==='Evento'?'🎯':t==='Urgente'?'🚨':'📌';
+  const estadoBadge=e=>e==='Pendente'?'sit-pendente':e==='Em Progresso'?'sit-progresso':e==='Concluída'?'sit-concluida':'sit-cancelada';
+  const ESTADOS=['Pendente','Em Progresso','Concluída','Cancelada'];
+  const NOMES_SIT={DUARTE:'Flávio Duarte',REIS:'Elder Reis',FINO:'Rui Fino',MORGADO:'António Morgado',NUNES:'Carlos Nunes',AFONSO:'Miguel Afonso'};
+  const cor=t=>t.includes('Órgão')?'#E67E22':t==='Urgente'?'#C00000':t==='Evento'?'#3D82C4':'#8B5CA5';
+  el.innerHTML=sits.map(s=>{
+    const df=fmtData(s.data); const hf=fmtHora(s.hora);
+    return `<div class="sit-card" style="border-color:${cor(s.tipo)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:1.5rem">${tipoIcon(s.tipo)}</span>
+          <div>
+            <div style="font-weight:700;font-size:.9rem">${s.descricao}</div>
+            <div style="font-size:.72rem;color:var(--muted)">${s.tipo}${df?' · '+df:''}${hf?' às '+hf:''}${s.militar&&NOMES_SIT[s.militar]?' · '+NOMES_SIT[s.militar]:''}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="sit-badge ${estadoBadge(s.estado)}">${s.estado}</span>
+          <select onchange="updateEstadoSit('${s.id}',this.value)" style="font-size:.72rem;border:1px solid var(--border);border-radius:6px;padding:3px 6px">
+            ${ESTADOS.map(e=>`<option value="${e}"${e===s.estado?' selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      ${s.notas&&s.notas!=='undefined'?`<div style="margin-top:8px;font-size:.75rem;color:var(--muted);background:#f7f9fc;border-radius:6px;padding:6px 8px">📝 ${s.notas}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function submitSituacao() {
+  const pwd=document.getElementById('sit-pwd').value;
+  const tipo=document.getElementById('sit-tipo').value;
+  const descricao=document.getElementById('sit-descricao').value.trim();
+  const data=document.getElementById('sit-data').value;
+  const hora=document.getElementById('sit-hora').value;
+  const militar=document.getElementById('sit-militar').value;
+  const notas=document.getElementById('sit-notas').value;
+  if(!descricao||!pwd) { alert('Preencha a descrição e a palavra-passe.'); return; }
+  showLoading(true);
+  const cbName='cb_addsit_'+Date.now();
+  const params=new URLSearchParams({action:'addSituacao',password:pwd,tipo,descricao,data,hora,militar,notas,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script); showLoading(false);
+    if(d.status==='ok') { alert('✅ Situação registada!'); closeOverlay('overlay-situacao'); document.getElementById('sit-descricao').value=''; document.getElementById('sit-pwd').value=''; loadSituacoes(); }
+    else { alert('Erro: '+(d.error||'desconhecido')); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); showLoading(false); };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+
+function updateEstadoSit(id,estado) {
+  const pwd=prompt('Palavra-passe de situações:');
+  if(!pwd) return;
+  const cbName='cb_updsit_'+Date.now();
+  const params=new URLSearchParams({action:'updateSituacao',password:pwd,id,estado,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script); if(d.status==='ok') loadSituacoes(); else alert('Erro: '+(d.error||'desconhecido')); };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+
+// ═══════════════ FÉRIAS ═══════════════
+function loginFerias() {
+  const mil=document.getElementById('fer-login-mil').value;
+  const pwd=document.getElementById('fer-login-pwd').value;
+  if(!mil) { alert('Selecione o seu nome.'); return; }
+  if(!pwd||FERIAS_PWD_LOCAL[mil]!==pwd) { alert('Palavra-passe incorreta.'); document.getElementById('fer-login-pwd').value=''; return; }
+  FERIAS_USER=mil;
+  mostrarAreaFerias();
+  loadFerias();
+}
+function logoutFerias() {
+  FERIAS_USER=null;
+  document.getElementById('ferias-login').style.display='block';
+  document.getElementById('ferias-area').style.display='none';
+  document.getElementById('fer-login-pwd').value='';
+  document.getElementById('fer-login-mil').value='';
+}
+function mostrarAreaFerias() {
+  document.getElementById('ferias-login').style.display='none';
+  document.getElementById('ferias-area').style.display='block';
+  document.getElementById('ferias-user-info').innerHTML='👤 '+NOMES[FERIAS_USER];
+}
+function loadFerias() {
+  const cbName='cb_fer_'+Date.now();
+  const script=document.createElement('script');
+  window[cbName]=function(data){ delete window[cbName]; document.body.removeChild(script);
+    if(data.status==='ok') { FERIAS_DATA=data.ferias||[]; FERIAS_RESUMO=data.resumo||{}; FERIAS_PROXIMO=data.proximoAMarcar; renderFeriasResumo(); renderFeriasLista(); renderFeriasProximo(); updateBtnFerias(); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); };
+  script.src=API_URL+'?action=getFerias&callback='+cbName;
+  document.body.appendChild(script);
+}
+function updateBtnFerias() {
+  const area=document.getElementById('btn-ferias-area');
+  if(!area||!FERIAS_USER) return;
+  const r=FERIAS_RESUMO[FERIAS_USER]||{};
+  const podeMarcar=FERIAS_PROXIMO===FERIAS_USER&&(r.diasRestantes||0)>0&&(r.periodosRestantes||0)>0;
+  area.style.display=podeMarcar?'block':'none';
+}
+function renderFeriasResumo() {
+  const el=document.getElementById('ferias-resumo'); if(!el) return;
+  el.innerHTML=ORDEM_ANTIG.map(p=>{
+    const r=FERIAS_RESUMO[p]||{};
+    const pct=Math.round(((r.diasTotal||0)-(r.diasRestantes||r.diasTotal||0))/(r.diasTotal||1)*100);
+    return `<div class="fer-resumo-card" style="border-color:${COLORS[p]}">
+      <div class="fer-resumo-name" style="color:${COLORS[p]}">${(NOMES[p]||p).split(' ')[1]||NOMES[p]}</div>
+      <div class="fer-resumo-dias">${r.diasRestantes!==undefined?r.diasRestantes:r.diasTotal||0}</div>
+      <div class="fer-resumo-sub">/ ${r.diasTotal||0} dias</div>
+      <div class="fer-bar"><div class="fer-bar-fill" style="background:${COLORS[p]};width:${pct}%"></div></div>
+      <div class="fer-resumo-sub">${r.periodosUsados||0}/5 períodos</div>
+    </div>`;
+  }).join('');
+}
+function renderFeriasProximo() {
+  const el=document.getElementById('ferias-proximo'); if(!el) return;
+  if(FERIAS_PROXIMO) {
+    const eSua=FERIAS_USER&&FERIAS_PROXIMO===FERIAS_USER;
+    el.innerHTML=`<div class="info-box ${eSua?'info-green':'info-blue'}">${eSua?'🎯 <b>É a sua vez de marcar!</b>':'<b>Próximo a marcar:</b> '+NOMES[FERIAS_PROXIMO]+' <span style="color:var(--muted)">(aguarde)</span>'}</div>`;
+  } else {
+    el.innerHTML='<div class="info-box info-green">✅ Todos os períodos marcados.</div>';
+  }
+}
+function renderFeriasLista() {
+  const el=document.getElementById('ferias-lista'); if(!el) return;
+  const visiv=FERIAS_DATA.filter(f=>f.estado!=='Cancelada');
+  if(!visiv.length) { el.innerHTML='<div class="empty-state">Ainda não há pedidos de férias.</div>'; return; }
+  const estadoClass=e=>e==='Aprovada'?'sit-concluida':e==='Pendente'?'sit-pendente':'sit-cancelada';
+  const fmtD=s=>s?s.split('-').reverse().join('/'):'—';
+  let html='';
+  for(const p of ORDEM_ANTIG) {
+    const pF=FERIAS_DATA.filter(f=>f.militar===p&&f.estado!=='Cancelada').sort((a,b)=>a.inicio.localeCompare(b.inicio));
+    if(!pF.length) continue;
+    html+=`<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:${COLORS[p]};margin-bottom:6px;letter-spacing:.05em">${NOMES[p]}</div>
+      ${pF.map(f=>{
+        const podeCancel=FERIAS_USER&&f.militar===FERIAS_USER&&f.estado==='Pendente';
+        return `<div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:6px;border-left:4px solid ${f.avisoAnoAnterior?'#E67E22':COLORS[p]};box-shadow:var(--shadow)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div style="font-weight:700;font-size:.88rem">${fmtD(f.inicio)} a ${fmtD(f.fim)}</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${f.diasUteis} dias úteis</div></div>
+            <span class="sit-badge ${estadoClass(f.estado)}">${f.estado}</span>
+          </div>
+          ${f.avisoAnoAnterior?`<div style="font-size:.7rem;color:#E67E22;margin-top:6px">${f.avisoAnoAnterior}</div>`:''}
+          ${podeCancel?`<button onclick="cancelarPeriodo('${f.id}')" style="margin-top:8px;background:none;border:1px solid var(--red);color:var(--red);border-radius:8px;padding:5px 12px;font-size:.72rem;cursor:pointer;width:100%">🗑 Cancelar pedido</button>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+function calcularDiasUteis() {
+  const ini=document.getElementById('fer-inicio').value;
+  const fim=document.getElementById('fer-fim').value;
+  const mil=FERIAS_USER;
+  const el=document.getElementById('fer-calculo');
+  if(!ini||!fim) { el.textContent=''; return; }
+  let d=new Date(ini+'T12:00:00'); const fimD=new Date(fim+'T12:00:00');
+  if(d>fimD) { el.innerHTML='<span style="color:var(--red)">⚠ Data início posterior ao fim</span>'; return; }
+  let uteis=0; let dc=new Date(d);
+  while(dc<=fimD) { if(dc.getDay()!==0&&dc.getDay()!==6&&!FERIADOS_2027.has(dc.toISOString().split('T')[0])) uteis++; dc.setDate(dc.getDate()+1); }
+  const restantes=mil&&FERIAS_RESUMO[mil]?FERIAS_RESUMO[mil].diasRestantes:'?';
+  const cor=uteis<10?'#E67E22':uteis<=restantes?'#27AE60':'#C0392B';
+  const aviso=uteis>restantes?' ⚠ Excede dias disponíveis':'';
+  const nota=uteis<10?' (nota: mínimo 10 dias num período)':'';
+  el.innerHTML=`<span style="color:${cor};font-weight:700">${uteis} dias úteis${aviso}</span><span style="color:var(--muted);font-size:.75rem">${nota}</span>`;
+}
+function submeterFerias() {
+  const mil=FERIAS_USER;
+  const ini=document.getElementById('fer-inicio').value;
+  const fim=document.getElementById('fer-fim').value;
+  const obs=document.getElementById('fer-obs').value;
+  if(!mil||!ini||!fim) { alert('Preencha todos os campos.'); return; }
+  if(!confirm('Submeter pedido de férias?')) return;
+  showLoading(true);
+  const pwd=FERIAS_PWD_LOCAL[mil]||'';
+  const cbName='cb_pedfer_'+Date.now();
+  const params=new URLSearchParams({action:'submeterFerias',militar:mil,inicio:ini,fim:fim,obs,password:pwd,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script); showLoading(false);
+    if(d.status==='ok') { let msg='✅ '+d.diasUteis+' dias úteis. Aguarda aprovação.'; if(d.aviso) msg+='\n\n'+d.aviso; alert(msg); closeOverlay('overlay-ferias'); document.getElementById('fer-inicio').value=''; document.getElementById('fer-fim').value=''; loadFerias(); }
+    else { alert('Erro: '+(d.error||'desconhecido')); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); showLoading(false); alert('Erro de ligação.'); };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+function cancelarPeriodo(id) {
+  if(!FERIAS_USER) return;
+  if(!confirm('Cancelar este pedido de férias?')) return;
+  showLoading(true);
+  const pwd=FERIAS_PWD_LOCAL[FERIAS_USER]||'';
+  const cbName='cb_cancel_'+Date.now();
+  const params=new URLSearchParams({action:'cancelarFerias',id,militar:FERIAS_USER,password:pwd,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script); showLoading(false);
+    if(d.status==='ok') { alert('✅ Cancelado.'); loadFerias(); }
+    else { alert('Erro: '+(d.error||'desconhecido')); }
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); showLoading(false); };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+
+// ═══════════════ APROVAÇÃO (URL params) ═══════════════
+function checkApprovalUrl() {
+  const p=new URLSearchParams(window.location.search);
+  const acao=p.get('acao'); const id=p.get('id');
+  if(!acao||!id) return;
+  const overlay=document.getElementById('approval-overlay');
+  const icon=document.getElementById('approval-icon');
+  const title=document.getElementById('approval-title');
+  const details=document.getElementById('approval-details');
+  const btns=document.getElementById('approval-btns');
+  if(!overlay) return;
+  overlay.classList.add('show');
+  if(acao==='aprovar') {
+    icon.textContent='✅'; title.textContent='Aprovar Troca';
+    details.innerHTML='<p style="color:#555">Pedido ID: <b>'+id+'</b><br>A escala será actualizada automaticamente.</p>';
+    btns.innerHTML=`<button onclick="processarAprovacao('${id}','aprovar')" style="background:#27AE60;color:#fff;border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%">✅ Confirmar Aprovação</button><button onclick="fecharAprovacao()" style="background:#f0f0f0;color:#555;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Cancelar</button>`;
+  } else {
+    icon.textContent='❌'; title.textContent='Rejeitar Troca';
+    details.innerHTML='<p style="color:#555">Pedido ID: <b>'+id+'</b></p>';
+    btns.innerHTML=`<button onclick="processarAprovacao('${id}','rejeitar')" style="background:#C0392B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%">❌ Confirmar Rejeição</button><button onclick="fecharAprovacao()" style="background:#f0f0f0;color:#555;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Cancelar</button>`;
+  }
+}
+function checkFeriasUrl() {
+  const p=new URLSearchParams(window.location.search);
+  const facao=p.get('facao'); const fid=p.get('fid');
+  if(!facao||!fid) return;
+  const overlay=document.getElementById('approval-overlay');
+  const icon=document.getElementById('approval-icon');
+  const title=document.getElementById('approval-title');
+  const details=document.getElementById('approval-details');
+  const btns=document.getElementById('approval-btns');
+  if(!overlay) return;
+  overlay.classList.add('show');
+  if(facao==='aprovar') {
+    icon.textContent='🏖️'; title.textContent='Aprovar Férias';
+    details.innerHTML='<p style="color:#555">Pedido ID: <b>'+fid+'</b></p>';
+    btns.innerHTML=`<button onclick="processarFeriasAprovacao('${fid}','aprovar')" style="background:#27AE60;color:#fff;border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%">✅ Aprovar Férias</button><button onclick="fecharAprovacao()" style="background:#f0f0f0;color:#555;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Cancelar</button>`;
+  } else {
+    icon.textContent='❌'; title.textContent='Rejeitar Férias';
+    details.innerHTML='<p style="color:#555">Pedido ID: <b>'+fid+'</b></p>';
+    btns.innerHTML=`<button onclick="processarFeriasAprovacao('${fid}','rejeitar')" style="background:#C0392B;color:#fff;border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%">❌ Rejeitar Férias</button><button onclick="fecharAprovacao()" style="background:#f0f0f0;color:#555;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Cancelar</button>`;
+  }
+}
+function processarAprovacao(id,decisao) {
+  const btns=document.getElementById('approval-btns');
+  const result=document.getElementById('approval-result');
+  btns.innerHTML='<p style="color:#888;text-align:center">⏳ A processar...</p>';
+  const action=decisao==='aprovar'?'aprovarTroca':'rejeitarTroca';
+  const cbName='cb_apr_'+Date.now();
+  const params=new URLSearchParams({action,id,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script);
+    result.style.display='block';
+    result.style.background=decisao==='aprovar'?'#D4EDDA':'#F8D7DA';
+    result.style.color=decisao==='aprovar'?'#155724':'#721c24';
+    result.innerHTML=(decisao==='aprovar'?'✅ Troca aprovada!':'❌ Troca rejeitada!')+' Os militares foram notificados.';
+    btns.innerHTML='<button onclick="fecharAprovacao()" style="background:var(--navy);color:#fff;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Fechar</button>';
+    loadFromAPI();
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); result.style.display='block'; result.innerHTML='⚠️ Erro de ligação.'; };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+function processarFeriasAprovacao(fid,decisao) {
+  const btns=document.getElementById('approval-btns');
+  const result=document.getElementById('approval-result');
+  btns.innerHTML='<p style="color:#888;text-align:center">⏳ A processar...</p>';
+  const action=decisao==='aprovar'?'aprovarFerias':'rejeitarFerias';
+  const cbName='cb_ferapr_'+Date.now();
+  const params=new URLSearchParams({action,fid,callback:cbName});
+  const script=document.createElement('script');
+  window[cbName]=function(d){ delete window[cbName]; document.body.removeChild(script);
+    result.style.display='block';
+    result.style.background=decisao==='aprovar'?'#D4EDDA':'#F8D7DA';
+    result.style.color=decisao==='aprovar'?'#155724':'#721c24';
+    result.innerHTML=(decisao==='aprovar'?'✅ Férias aprovadas!':'❌ Férias rejeitadas!')+' O militar foi notificado.';
+    btns.innerHTML='<button onclick="fecharAprovacao()" style="background:var(--navy);color:#fff;border:none;border-radius:12px;padding:12px;font-size:.88rem;cursor:pointer;width:100%;margin-top:8px">Fechar</button>';
+  };
+  script.onerror=function(){ delete window[cbName]; document.body.removeChild(script); result.style.display='block'; result.innerHTML='⚠️ Erro de ligação.'; };
+  script.src=API_URL+'?'+params.toString();
+  document.body.appendChild(script);
+}
+function fecharAprovacao() {
+  document.getElementById('approval-overlay').classList.remove('show');
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+// ═══════════════ PDF FÉRIAS ═══════════════
+function exportFeriasPDF() {
+  const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DIAS_SEMANA=['D','S','T','Q','Q','S','S'];
+  const fmtD=s=>s?s.split('-').reverse().join('/'):'—';
+  const ferMap={};
+  for(const f of FERIAS_DATA) {
+    if(f.estado==='Rejeitada'||f.estado==='Cancelada') continue;
+    let d=new Date(f.inicio+'T12:00:00'); const fim=new Date(f.fim+'T12:00:00');
+    while(d<=fim) { const ds=d.toISOString().split('T')[0]; if(!ferMap[ds]) ferMap[ds]=[]; ferMap[ds].push({militar:f.militar,estado:f.estado}); d.setDate(d.getDate()+1); }
+  }
+  let calHtml='';
+  for(let mo=0;mo<12;mo++) {
+    const daysInMonth=new Date(2027,mo+1,0).getDate();
+    let headNums='',headDias='',militarRows='';
+    for(let d=1;d<=daysInMonth;d++) {
+      const dt=new Date(2027,mo,d); const ds=`2027-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isWk=dt.getDay()===0||dt.getDay()===6; const isFer=FERIADOS_2027.has(ds);
+      const bgH=isFer?'#FFE0B2':isWk?'#BFBFBF':'#D9E1F2';
+      headNums+=`<th style="width:18px;background:${bgH};border:1px solid #999;text-align:center;font-size:7px;font-weight:700;padding:1px 0">${d}</th>`;
+      headDias+=`<th style="background:${bgH};border:1px solid #999;text-align:center;font-size:6px;font-weight:700;padding:1px 0">${DIAS_SEMANA[dt.getDay()]}</th>`;
+    }
+    for(const p of ORDEM_ANTIG) {
+      let cells='';
+      for(let d=1;d<=daysInMonth;d++) {
+        const dt=new Date(2027,mo,d); const ds=`2027-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isWk=dt.getDay()===0||dt.getDay()===6; const isFer=FERIADOS_2027.has(ds);
+        const fi=ferMap[ds]?ferMap[ds].find(f=>f.militar===p):null;
+        let bg=isWk?'#EDEDED':isFer?'#FFF3E0':'#fff'; let txt='',fw='normal',color='#000';
+        if(fi) { bg=fi.estado==='Aprovada'?'#B18CD9':'#FFD700'; txt='F'; fw='bold'; color=fi.estado==='Aprovada'?'#4a1a6b':'#856404'; }
+        cells+=`<td style="background:${bg};border:1px solid #ddd;text-align:center;font-size:7px;font-weight:${fw};color:${color};padding:1px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact">${txt}</td>`;
+      }
+      const r=FERIAS_RESUMO[p]||{};
+      militarRows+=`<tr><td style="border:1px solid #bbb;padding:2px 4px;font-size:8px;white-space:nowrap;background:#D9E1F2;font-weight:700">${(NOMES[p]||p).split(' ')[1]||NOMES[p]}</td><td style="border:1px solid #bbb;padding:2px 4px;font-size:7px;text-align:center;background:#D9E1F2">${r.diasRestantes!==undefined?r.diasRestantes:r.diasTotal||0}d</td>${cells}</tr>`;
+    }
+    calHtml+=`<div style="margin-bottom:18px;page-break-inside:avoid"><div style="background:#C00000;color:#fff;text-align:center;font-weight:700;font-size:10px;padding:4px;letter-spacing:.1em">${MESES[mo].toUpperCase()} 2027</div><table style="border-collapse:collapse;width:100%;table-layout:fixed"><thead><tr><th style="background:#D9E1F2;border:1px solid #999;padding:2px 3px;font-size:7px;width:52px">MILITAR</th><th style="background:#D9E1F2;border:1px solid #999;padding:2px 3px;font-size:7px;width:24px">SALDO</th>${headNums}</tr><tr><th style="background:#D9E1F2;border:1px solid #999" colspan="2"></th>${headDias}</tr></thead><tbody>${militarRows}</tbody></table></div>`;
+  }
+  const win=window.open('','_blank','width=1100,height=800');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Férias 2027</title><style>@page{size:A4 landscape;margin:8mm}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box}body{font-family:Calibri,Arial,sans-serif;margin:0;padding:10px}</style></head><body><div style="text-align:center;margin-bottom:12px"><div style="font-size:13px;font-weight:700">CALENDÁRIO DE FÉRIAS 2027 — OPERADORES DE TRÂNSITO</div><div style="font-size:9px;color:#666;margin-top:2px">Gerado em ${new Date().toLocaleDateString('pt-PT')}</div></div>${calHtml}</body></html>`);
+  win.document.close(); setTimeout(()=>win.print(),600);
+}
+
+// ═══════════════ INIT ═══════════════
+window.addEventListener('DOMContentLoaded', () => {
+  initPills();
+  // datas por defeito — mês actual
+  const hoje=new Date();
+  const y=hoje.getFullYear(); const m=String(hoje.getMonth()+1).padStart(2,'0');
+  const lastDay=new Date(hoje.getFullYear(),hoje.getMonth()+1,0).getDate();
+  document.getElementById('start-date').value=`${y}-${m}-01`;
+  document.getElementById('end-date').value=`${y}-${m}-${String(lastDay).padStart(2,'0')}`;
+  loadFromAPI();
+});
+</script>
+</body>
+</html>
